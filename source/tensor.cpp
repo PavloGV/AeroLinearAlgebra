@@ -14,21 +14,19 @@
  * PUBLIC FUNCTION IMPLEMENTATIONS
  *****************************************************************************/
 tensor_status_t tensor::set_tensor_element(const unsigned int row,
-    const unsigned int col, double value) {
+                                           const unsigned int col, double value) {
     tensor_status_t status = SUCCESS;
     if ((row >= 0) && (row < m_height) && (col >= 0) && (col < n_width)) {
         content[row][col] = value;
 
-    }
-    else {
+    } else {
         status = FAILURE;
     }
 
     return status;
 }
 
-tensor_status_t tensor::set_tensor(const vector<vector<double>>& vv)
-{
+tensor_status_t tensor::set_tensor_content(const vector<vector<double>>& vv) {
     tensor_status_t status = SUCCESS;
 
     if ((vv.size() == m_height) && (vv[0].size() == n_width)) {
@@ -42,40 +40,65 @@ tensor_status_t tensor::set_tensor(const vector<vector<double>>& vv)
     return status;
 }
 
-tensor_status_t tensor::multiply(const tensor& a, const tensor& b) {
-    tensor_status_t status = SUCCESS;
+tensor multiply(const tensor& a, const tensor& b) {
+    tensor c(a.m_height, b.n_width);
 
     /* Check tensor dimensions */
-    if ((a.n_width == b.m_height) && (a.m_height == m_height)
-        && (b.n_width == n_width)) {
+    if (a.n_width == b.m_height) {
 
         /* Iterate through rows in tensor c */
         for (int i = 0; i < a.m_height; i++) {
 
             /* Iterate through columns in tensor b */
             for (int j = 0; j < b.n_width; j++) {
-                content[i][j] = 0.0;
+                c.content[i][j] = 0.0;
 
                 /* Iterate through elements in row of tensor a, and column
                  * of tensor b, respectively */
                 for (int k = 0; k < b.m_height; k++) {
-                    content[i][j] += (a.content[i][k] * b.content[k][j]);
+                    c.content[i][j] += (a.content[i][k] * b.content[k][j]);
                 }
             }
         }
+    }
 
-    }
-    else {
-        status = FAILURE;
-    }
-    return status;
+    return c;
 }
 
+tensor copy(const tensor& a) {
+    tensor b(a.m_height, a.n_width);
+
+    b.set_tensor_content(a.content);
+
+    for (int i = 0; i < b.ref_point_a.size(); i++) {
+        b.ref_point_a[i] = a.ref_point_a[i];
+        b.ref_point_b[i] = a.ref_point_b[i];
+    }
+    return b;
+}
+
+tensor transpose(const tensor& a) {
+    tensor b(a.n_width, a.m_height);
+
+    for (int i = 0; i < b.m_height; i++) {
+        for (int j = 0; j < b.n_width; j++) {
+            b.content[i][j] = a.content[j][i];
+        }
+    }
+
+    return b;
+}
+
+/******************************************************************************
+ * UNIT TESTS
+ *****************************************************************************/
 #ifdef TESTING
 #include <iostream>
 
-void tensor::print_tensor(void)
-{
+/**
+ * @todo: print all the other tensor class attributes
+*/
+void tensor::print_tensor(void) {
     for (int row = 0; row < m_height; row++) {
         cout << "[ ";
         for (int col = 0; col < n_width; col++) {
@@ -91,6 +114,7 @@ using namespace std;
 int main(void) {
 
 #ifdef TEST_TENSOR_CLASS_CONSTRUCTOR
+    cout << "Testing tensor constructor\r\n";
     int rows;
     int cols;
     rows = 4;
@@ -98,41 +122,50 @@ int main(void) {
 
     tensor tnsr0(rows, cols);
 
-    for (int row = 0; row < tnsr0.m_height; row++) {
-        cout << "[ ";
-        for (int col = 0; col < tnsr0.n_width; col++) {
-            cout << tnsr0.content[row][col] << " ";
-        }
-        cout << "]\n";
-    }
-    cout << "Dimensions: " << tnsr0.m_height << " x " << tnsr0.n_width << "\n";
+    tnsr0.print_tensor();
+
+    tensor a(vector<vector<double>> { { 1, 2 }, { 2, 1 }, { 1, 2 },
+             { 2, 1} });
+    a.print_tensor();
 #endif
 
 #ifdef TEST_TENSOR_MULTIPLICATION
-    tensor a(2, 3);
-    tensor b(3, 1);
-    tensor c(2, 1);;
+    {
+        cout << "Testing tensor multiplication\r\n";
+        tensor a(vector<vector<double>> { { 1, 2, 0 }, { 2, 1, 0 } });
+        tensor b(vector<vector<double>> { { 1 }, { 2 }, { 3 } });
 
-    /* Set all of the tensors */
-    vector<vector<double>> avv = {
-        { 1, 2, 0 }, { 2, 1, 0 }
-    };
-    vector<vector<double>> bvv = { { 1 }, { 2 }, { 3 } };
+        cout << "first operand tensor:\r\n";
+        a.print_tensor();
 
-    a.set_tensor(avv);
-    b.set_tensor(bvv);
+        cout << "second operand tensor:\r\n";
+        b.print_tensor();
 
-    /* Print everything */
-    cout << "first operand tensor:\r\n";
-    a.print_tensor();
+        tensor c = multiply(a, b);
 
-    cout << "second operand tensor:\r\n";
-    b.print_tensor();
-
-    if (c.multiply(a, b) == SUCCESS) {
-        cout << "tensor multiplication completed, result:\r\n";
+        c.print_tensor();
     }
-    c.print_tensor();
+#endif
+#ifdef TEST_TENSOR_COPY
+    {
+        cout << "Testing tensor copy()\r\n";
+        cout << "first operand tensor to be copied:\r\n";
+        tensor a(vector<vector<double>> { { 1, 2, 5 }, { 2, 1, 50.02 } });
+        tensor b = copy(a);
+        a.print_tensor();
+        b.print_tensor();
+    }
+#endif
+#ifdef TEST_TENSOR_TRANSPOSE
+    {
+        cout << "Testing tensor transpose()\r\n";
+        cout << "first operand tensor to be tranposed:\r\n";
+        tensor a(vector<vector<double>> { { 1.0, 3.2, 0.5 }, { 0.2, 1.0, 50.02 },
+                 { 0.1, 11, 25.01 }});
+        tensor b = transpose(a);
+        a.print_tensor();
+        b.print_tensor();
+    }
 #endif
 
     return 1;
