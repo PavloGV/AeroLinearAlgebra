@@ -4,4 +4,6 @@
  * @brief Configurations for tensor class and subsequent tests
  */
 
-#define TEST_CLASS_CONSTRUCTOR
+#define TESTING
+//#define TEST_TENSOR_CLASS_CONSTRUCTOR
+#define TEST_TENSOR_MULTIPLICATION
