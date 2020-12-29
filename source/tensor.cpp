@@ -89,6 +89,43 @@ tensor transpose(const tensor& a) {
     return b;
 }
 
+//tensor invert(const tensor& a) {
+//
+//}
+
+//tensor gaussian_elimination(const tensor& a) {
+//    tensor b(a.m_height, a.n_width);
+//
+//    /* Reduce to uppder triangular form */
+//    for (int i = 0; i < m_height; i++) {
+//        for (int j = 0; j < n_width; j++) {
+//
+//        }
+//    }
+//}
+
+tensor_status_t tensor::swap_rows(int row_a, int row_b) {
+    double temp_element = 0.0;
+    tensor_status_t status = FAILURE;
+
+    if ((row_a >= 0) && (row_b >= 0) && (row_a != row_b)) {
+        /* Copy the row to be swapped and begin swapping each element */
+        for (int j = 0; j < n_width; j++) {
+            temp_element = content[row_a][j];
+            content[row_a][j] = content[row_b][j];
+            content[row_b][j] = temp_element;
+        }
+
+        status = SUCCESS;
+    } else if (row_a == row_b) {
+        status = SUCCESS;
+    } else {
+        status = FAILURE;
+    }
+
+    return status;
+}
+
 /******************************************************************************
  * UNIT TESTS
  *****************************************************************************/
@@ -125,7 +162,7 @@ int main(void) {
     tnsr0.print_tensor();
 
     tensor a(vector<vector<double>> { { 1, 2 }, { 2, 1 }, { 1, 2 },
-             { 2, 1} });
+             { 2, 1 } });
     a.print_tensor();
 #endif
 
@@ -167,7 +204,15 @@ int main(void) {
         b.print_tensor();
     }
 #endif
-
+#ifdef TEST_TENSOR_SWAP_ROWS
+    {
+        tensor a(vector<vector<double>> { { 1.0, 3.2, 0.5 }, { 0.2, 1.0, 50.02 },
+                 { 0.1, 11, 25.01 }});
+        a.print_tensor();
+        a.swap_rows(0, 2);
+        a.print_tensor();
+    }
+#endif
     return 1;
 }
 #endif

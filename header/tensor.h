@@ -115,6 +115,13 @@ public:
     */
     tensor_status_t set_tensor_content(const vector<vector<double>>& avv);
 
+    /**
+     * @brief Swap the rows of a tensor content
+     * @param row_a The row number [0,1,..., m] to swap with row_b
+     * @param row_b The row number [0,1,..., m] to swap with row_a
+     * @return Tensor status (SUCCESS or FAILURE)
+    */
+    tensor_status_t swap_rows(int row_a, int row_b);
 #ifdef TESTING
     /**
      * @brief print the tensor
@@ -141,3 +148,11 @@ tensor copy(const tensor& a);
  * @brief tansposes the immediate tensor
  */
 tensor transpose(const tensor& a);
+
+tensor invert(const tensor& a);
+
+/**
+ * @brief Performs gaussian elimination to row reduce tensor to upper
+ * triangular form.
+*/
+tensor gaussian_elimination(const tensor&a);
