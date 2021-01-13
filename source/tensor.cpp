@@ -13,25 +13,26 @@
 /******************************************************************************
  * PUBLIC FUNCTION IMPLEMENTATIONS
  *****************************************************************************/
-tensor_status_t tensor::set_tensor_element(const unsigned int row,
-                                           const unsigned int col, double value) {
-    tensor_status_t status = SUCCESS;
+tensor_status tensor::set_tensor_element(const unsigned int row,
+                                         const unsigned int col,
+                                         double value) {
+    tensor_status status = tensor_status::SUCCESS;
     if ((row >= 0) && (row < m_height) && (col >= 0) && (col < n_width)) {
         content[row][col] = value;
 
     } else {
-        status = FAILURE;
+        status = tensor_status::FAILURE;
     }
 
     return status;
 }
 
-tensor_status_t tensor::set_tensor_content(const vector<vector<double>>& vv) {
-    tensor_status_t status = SUCCESS;
+tensor_status tensor::set_tensor_content(const vector<vector<double>>& vv) {
+    tensor_status status = tensor_status::SUCCESS;
 
     if ((vv.size() == m_height) && (vv[0].size() == n_width)) {
-        for (int row = 0; row < m_height; row++) {
-            for (int col = 0; col < n_width; col++) {
+        for (unsigned int row = 0; row < m_height; row++) {
+            for (unsigned int col = 0; col < n_width; col++) {
                 content[row][col] = vv[row][col];
             }
         }
@@ -47,15 +48,15 @@ tensor multiply(const tensor& a, const tensor& b) {
     if (a.n_width == b.m_height) {
 
         /* Iterate through rows in tensor c */
-        for (int i = 0; i < a.m_height; i++) {
+        for (unsigned int i = 0; i < a.m_height; i++) {
 
             /* Iterate through columns in tensor b */
-            for (int j = 0; j < b.n_width; j++) {
+            for (unsigned int j = 0; j < b.n_width; j++) {
                 c.content[i][j] = 0.0;
 
                 /* Iterate through elements in row of tensor a, and column
                  * of tensor b, respectively */
-                for (int k = 0; k < b.m_height; k++) {
+                for (unsigned int k = 0; k < b.m_height; k++) {
                     c.content[i][j] += (a.content[i][k] * b.content[k][j]);
                 }
             }
@@ -70,18 +71,14 @@ tensor copy(const tensor& a) {
 
     b.set_tensor_content(a.content);
 
-    for (int i = 0; i < b.ref_point_a.size(); i++) {
-        b.ref_point_a[i] = a.ref_point_a[i];
-        b.ref_point_b[i] = a.ref_point_b[i];
-    }
     return b;
 }
 
 tensor transpose(const tensor& a) {
     tensor b(a.n_width, a.m_height);
 
-    for (int i = 0; i < b.m_height; i++) {
-        for (int j = 0; j < b.n_width; j++) {
+    for (unsigned int i = 0; i < b.m_height; i++) {
+        for (unsigned int j = 0; j < b.n_width; j++) {
             b.content[i][j] = a.content[j][i];
         }
     }
@@ -89,9 +86,13 @@ tensor transpose(const tensor& a) {
     return b;
 }
 
-//tensor invert(const tensor& a) {
-//
-//}
+tensor invert(const tensor& a) {
+    tensor a_aug(a.m_height, 2 * a.n_width);
+
+    a_aug.print_tensor();
+
+    return a_aug;
+}
 
 //tensor gaussian_elimination(const tensor& a) {
 //    tensor b(a.m_height, a.n_width);
@@ -104,23 +105,59 @@ tensor transpose(const tensor& a) {
 //    }
 //}
 
-tensor_status_t tensor::swap_rows(int row_a, int row_b) {
+tensor augment_width(const tensor& a, const tensor& b) {
+    tensor c(a.m_height, a.n_width + b.n_width);
+
+    if (a.m_height == b.m_height) {
+        for (unsigned int i = 0; i < c.m_height; i++) {
+            for (unsigned int j = 0; j < c.n_width; j++) {
+                if (j < a.n_width) {
+                    c.content[i][j] = a.content[i][j];
+                } else if ((j >= a.n_width) && (j < c.n_width)) {
+                    c.content[i][j] = b.content[i][j - a.n_width];
+                }
+            }
+        }
+    }
+
+    return c;
+}
+
+tensor augment_height(const tensor& a, const tensor& b) {
+    tensor c(a.m_height + b.m_height, a.n_width);
+
+    if (a.n_width == b.n_width) {
+        for (unsigned int i = 0; i < c.m_height; i++) {
+            for (unsigned int j = 0; j < c.n_width; j++) {
+                if (i < a.m_height) {
+                    c.content[i][j] = a.content[i][j];
+                } else if ((i >= a.m_height) && (i < c.m_height)) {
+                    c.content[i][j] = b.content[i - a.n_width][j];
+                }
+            }
+        }
+    }
+
+    return c;
+}
+
+tensor_status tensor::swap_rows(int row_a, int row_b) {
     double temp_element = 0.0;
-    tensor_status_t status = FAILURE;
+    tensor_status status = tensor_status::FAILURE;
 
     if ((row_a >= 0) && (row_b >= 0) && (row_a != row_b)) {
         /* Copy the row to be swapped and begin swapping each element */
-        for (int j = 0; j < n_width; j++) {
+        for (unsigned int j = 0; j < n_width; j++) {
             temp_element = content[row_a][j];
             content[row_a][j] = content[row_b][j];
             content[row_b][j] = temp_element;
         }
 
-        status = SUCCESS;
+        status = tensor_status::SUCCESS;
     } else if (row_a == row_b) {
-        status = SUCCESS;
+        status = tensor_status::SUCCESS;
     } else {
-        status = FAILURE;
+        status = tensor_status::FAILURE;
     }
 
     return status;
@@ -132,13 +169,10 @@ tensor_status_t tensor::swap_rows(int row_a, int row_b) {
 #ifdef TESTING
 #include <iostream>
 
-/**
- * @todo: print all the other tensor class attributes
-*/
 void tensor::print_tensor(void) {
-    for (int row = 0; row < m_height; row++) {
+    for (unsigned int row = 0; row < m_height; row++) {
         cout << "[ ";
-        for (int col = 0; col < n_width; col++) {
+        for (unsigned int col = 0; col < n_width; col++) {
             cout << content[row][col] << " ";
         }
         cout << "]\n";
@@ -211,6 +245,42 @@ int main(void) {
         a.print_tensor();
         a.swap_rows(0, 2);
         a.print_tensor();
+    }
+#endif
+#ifdef TEST_TENSOR_AUGMENT_WIDTH
+    {
+        tensor a(vector<vector<double>> { { 1.0, 2.0, 3.0 }, { 0.0, 1.0, 4.0 },
+                 { 5.0, 6.0, 1.0 }});
+        a.print_tensor();
+
+        tensor b = copy(a);
+        b.print_tensor();
+
+        tensor c = augment_width(a, b);
+        c.print_tensor();
+    }
+#endif
+#ifdef TEST_TENSOR_AUGMENT_HEIGHT
+    {
+        tensor a(vector<vector<double>> { { 1.0, 2.0, 3.0 }, { 0.0, 1.0, 4.0 },
+                 { 5.0, 6.0, 1.0 }});
+        a.print_tensor();
+
+        tensor b = copy(a);
+        b.print_tensor();
+
+        tensor c = augment_height(a, b);
+        c.print_tensor();
+    }
+#endif
+#ifdef TEST_TENSOR_INVERT
+    {
+        tensor a(vector<vector<double>> { { 1.0, 2.0, 3.0 }, { 0.0, 1.0, 4.0 },
+                 { 5.0, 6.0, 1.0 }});
+        a.print_tensor();
+
+        tensor b = invert(a);
+        b.print_tensor();
     }
 #endif
     return 1;
