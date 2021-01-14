@@ -141,6 +141,25 @@ tensor augment_height(const tensor& a, const tensor& b) {
     return c;
 }
 
+tensor_status eye(tensor& a) {
+    tensor_status status = tensor_status::FAILURE;
+
+    if (a.m_height == a.n_width) {
+        for (unsigned int i = 0; i < a.m_height; i++) {
+            for (unsigned int j = 0; j < a.n_width; j++) {
+                if (i == j) {
+                    a.content[i][j] = 1.0; // Place ones on the diagonal
+                } else {
+                    a.content[i][j] = 0.0;
+                }
+            }
+        }
+        status = tensor_status::SUCCESS;
+    }
+
+    return status;
+}
+
 tensor_status tensor::swap_rows(int row_a, int row_b) {
     double temp_element = 0.0;
     tensor_status status = tensor_status::FAILURE;
@@ -271,6 +290,16 @@ int main(void) {
 
         tensor c = augment_height(a, b);
         c.print_tensor();
+    }
+#endif
+#ifdef TEST_TENSOR_EYE
+    {
+        tensor a(vector<vector<double>> { { 1.0, 2.0, 3.0 }, { 0.0, 1.0, 4.0 },
+                 { 5.0, 6.0, 1.0 }});
+        a.print_tensor();
+
+        eye(a);
+        a.print_tensor();
     }
 #endif
 #ifdef TEST_TENSOR_INVERT

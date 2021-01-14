@@ -157,3 +157,8 @@ tensor augment_width(const tensor& a, const tensor& b);
  * @return c The height-augmented tensor
 */
 tensor augment_height(const tensor& a, const tensor& b);
+
+/**
+ * @brief Overwrites a given tensor into an identiy tensor
+*/
+tensor_status eye(tensor& a);
