@@ -134,7 +134,7 @@ tensor copy(const tensor& a);
  */
 tensor transpose(const tensor& a);
 
-tensor invert(const tensor& a);
+tensor_status invert(const tensor& a, tensor& a_inv);
 
 /**
  * @brief Performs gaussian elimination to row reduce tensor to upper
@@ -159,6 +159,8 @@ tensor augment_width(const tensor& a, const tensor& b);
 tensor augment_height(const tensor& a, const tensor& b);
 
 /**
- * @brief Overwrites a given tensor into an identiy tensor
+ * @brief Makes an identity matrix, doesn't have to be square
+ * @param m The number of rows
+ * @param n The number of columns
 */
-tensor_status eye(tensor& a);
+tensor eye(unsigned int m, unsigned int n);

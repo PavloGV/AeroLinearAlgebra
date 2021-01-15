@@ -10,6 +10,10 @@
 #include "tensor.h"
 #include "tensor_config.h"
 
+#ifdef TESTING
+#include <iostream>
+#endif
+
 /******************************************************************************
  * PUBLIC FUNCTION IMPLEMENTATIONS
  *****************************************************************************/
@@ -62,7 +66,6 @@ tensor multiply(const tensor& a, const tensor& b) {
             }
         }
     }
-
     return c;
 }
 
@@ -86,24 +89,64 @@ tensor transpose(const tensor& a) {
     return b;
 }
 
-tensor invert(const tensor& a) {
-    tensor a_aug(a.m_height, 2 * a.n_width);
+tensor_status invert(const tensor& a, tensor& a_inv) {
+    tensor_status status = tensor_status::FAILURE;
+    tensor a_aug = augment_width(a, eye(a.m_height, a.n_width));
+
+    double pivot = 0.0;
+    unsigned int pivot_row = 0;
+    double x = 0.0;
+    unsigned int target_row = 0;
 
     a_aug.print_tensor();
 
-    return a_aug;
-}
+    // Find the first pivot
+    for (unsigned int i = 0; i < a_aug.m_height; i++) {
+        pivot = a_aug.content[i][0];
+        if (pivot != 0.0) {
+            pivot_row = i;  
+            break;
+        }
+    }
 
-//tensor gaussian_elimination(const tensor& a) {
-//    tensor b(a.m_height, a.n_width);
-//
-//    /* Reduce to uppder triangular form */
-//    for (int i = 0; i < m_height; i++) {
-//        for (int j = 0; j < n_width; j++) {
-//
-//        }
-//    }
-//}
+    // If all elements in the first column are zero, return with failure status
+    if (pivot == 0.0) {
+        return status;
+    }
+
+    // If the pivot row is not at the top of the matrix, make it so
+    if (pivot_row != 0) {
+        if (a_aug.swap_rows(0, pivot_row) == tensor_status::SUCCESS) {
+            pivot_row = 0;
+        } else {
+            return status;
+        }
+    }
+
+    // Find the next row with a non-zero first element and zero it
+    target_row = 0;
+    for (unsigned int i = 1; i < a_aug.m_height; i++) {
+        target_row++;
+        if ((a_aug.content[i][0] != 0.0) && (target_row != pivot_row)) {
+            break;
+        }
+    }
+
+    x = 1.0/a_aug.content[target_row][0];
+
+    // Apply the subtraction
+    for (unsigned int i = 0; i < a.n_width; i++) {
+        a_aug.content[target_row][i] *= x;
+        cout << a_aug.content[pivot_row][i] << "\r\n";
+        a_aug.content[target_row][i] -= a_aug.content[pivot_row][i];
+    }
+
+    a_aug.print_tensor();
+
+    status = tensor_status::SUCCESS;
+    
+    return status;
+}
 
 tensor augment_width(const tensor& a, const tensor& b) {
     tensor c(a.m_height, a.n_width + b.n_width);
@@ -141,23 +184,18 @@ tensor augment_height(const tensor& a, const tensor& b) {
     return c;
 }
 
-tensor_status eye(tensor& a) {
-    tensor_status status = tensor_status::FAILURE;
+tensor eye(unsigned int m, unsigned int n) {
+    tensor a(m, n);
 
-    if (a.m_height == a.n_width) {
-        for (unsigned int i = 0; i < a.m_height; i++) {
-            for (unsigned int j = 0; j < a.n_width; j++) {
-                if (i == j) {
-                    a.content[i][j] = 1.0; // Place ones on the diagonal
-                } else {
-                    a.content[i][j] = 0.0;
-                }
+    for (unsigned int i = 0; i < m; i++) {
+        for (unsigned int j = 0; j < n; j++) {
+            if (i == j) {
+                a.content[i][j] = 1.0;
             }
         }
-        status = tensor_status::SUCCESS;
     }
 
-    return status;
+    return a;
 }
 
 tensor_status tensor::swap_rows(int row_a, int row_b) {
@@ -203,25 +241,27 @@ using namespace std;
 
 int main(void) {
 
-#ifdef TEST_TENSOR_CLASS_CONSTRUCTOR
-    cout << "Testing tensor constructor\r\n";
-    int rows;
-    int cols;
-    rows = 4;
-    cols = 3;
+#ifdef TEST_TENSOR_CLASS_CONSTRUCTOR 
+    {
+        cout << "TEST_TENSOR_CLASS_CONSTRUCTOR\r\n";
+        int rows;
+        int cols;
+        rows = 4;
+        cols = 3;
 
-    tensor tnsr0(rows, cols);
+        tensor tnsr0(rows, cols);
 
-    tnsr0.print_tensor();
+        tnsr0.print_tensor();
 
-    tensor a(vector<vector<double>> { { 1, 2 }, { 2, 1 }, { 1, 2 },
-             { 2, 1 } });
-    a.print_tensor();
+        tensor a(vector<vector<double>> { { 1, 2 }, { 2, 1 }, { 1, 2 },
+                 { 2, 1 } });
+        a.print_tensor();
+    }
 #endif
 
 #ifdef TEST_TENSOR_MULTIPLICATION
     {
-        cout << "Testing tensor multiplication\r\n";
+        cout << "TEST_TENSOR_MULTIPLICATION\r\n";
         tensor a(vector<vector<double>> { { 1, 2, 0 }, { 2, 1, 0 } });
         tensor b(vector<vector<double>> { { 1 }, { 2 }, { 3 } });
 
@@ -238,7 +278,7 @@ int main(void) {
 #endif
 #ifdef TEST_TENSOR_COPY
     {
-        cout << "Testing tensor copy()\r\n";
+        cout << "TEST_TENSOR_COPY\r\n";
         cout << "first operand tensor to be copied:\r\n";
         tensor a(vector<vector<double>> { { 1, 2, 5 }, { 2, 1, 50.02 } });
         tensor b = copy(a);
@@ -248,7 +288,7 @@ int main(void) {
 #endif
 #ifdef TEST_TENSOR_TRANSPOSE
     {
-        cout << "Testing tensor transpose()\r\n";
+        cout << "TEST_TENSOR_TRANSPOSE\r\n";
         cout << "first operand tensor to be tranposed:\r\n";
         tensor a(vector<vector<double>> { { 1.0, 3.2, 0.5 }, { 0.2, 1.0, 50.02 },
                  { 0.1, 11, 25.01 }});
@@ -259,6 +299,7 @@ int main(void) {
 #endif
 #ifdef TEST_TENSOR_SWAP_ROWS
     {
+        cout << "TEST_TENSOR_SWAP_ROWS\r\n";
         tensor a(vector<vector<double>> { { 1.0, 3.2, 0.5 }, { 0.2, 1.0, 50.02 },
                  { 0.1, 11, 25.01 }});
         a.print_tensor();
@@ -268,6 +309,7 @@ int main(void) {
 #endif
 #ifdef TEST_TENSOR_AUGMENT_WIDTH
     {
+        cout << "TEST_TENSOR_AUGMENT_WIDTH\r\n";
         tensor a(vector<vector<double>> { { 1.0, 2.0, 3.0 }, { 0.0, 1.0, 4.0 },
                  { 5.0, 6.0, 1.0 }});
         a.print_tensor();
@@ -281,6 +323,7 @@ int main(void) {
 #endif
 #ifdef TEST_TENSOR_AUGMENT_HEIGHT
     {
+        cout << "TEST_TENSOR_AUGMENT_HEIGHT\r\n";
         tensor a(vector<vector<double>> { { 1.0, 2.0, 3.0 }, { 0.0, 1.0, 4.0 },
                  { 5.0, 6.0, 1.0 }});
         a.print_tensor();
@@ -294,22 +337,24 @@ int main(void) {
 #endif
 #ifdef TEST_TENSOR_EYE
     {
-        tensor a(vector<vector<double>> { { 1.0, 2.0, 3.0 }, { 0.0, 1.0, 4.0 },
-                 { 5.0, 6.0, 1.0 }});
-        a.print_tensor();
-
-        eye(a);
+        cout << "TEST_TENSOR_EYE\r\n";
+        tensor a = eye(4, 4);
         a.print_tensor();
     }
 #endif
 #ifdef TEST_TENSOR_INVERT
     {
+        cout << "TEST_TENSOR_INVERT\r\n";
         tensor a(vector<vector<double>> { { 1.0, 2.0, 3.0 }, { 0.0, 1.0, 4.0 },
-                 { 5.0, 6.0, 1.0 }});
+                 { 5.0, 6.0, 1.0 } });
         a.print_tensor();
 
-        tensor b = invert(a);
-        b.print_tensor();
+        tensor a_inv(a.m_height, a.n_width);
+        a_inv.print_tensor();
+
+        invert(a, a_inv);
+
+        a_inv.print_tensor();
     }
 #endif
     return 1;
