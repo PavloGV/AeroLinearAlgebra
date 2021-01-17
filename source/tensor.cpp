@@ -91,60 +91,131 @@ tensor transpose(const tensor& a) {
 
 tensor_status invert(const tensor& a, tensor& a_inv) {
     tensor_status status = tensor_status::FAILURE;
-    tensor a_aug = augment_width(a, eye(a.m_height, a.n_width));
+    tensor aug = augment_width(a, eye(a.m_height, a.n_width));
 
     double pivot = 0.0;
     unsigned int pivot_row = 0;
+    unsigned int pivot_col = 0;
+    unsigned int pivot_dia = 0;
     double x = 0.0;
     unsigned int target_row = 0;
 
-    a_aug.print_tensor();
+    aug.print_tensor();
 
-    // Find the first pivot
-    for (unsigned int i = 0; i < a_aug.m_height; i++) {
-        pivot = a_aug.content[i][0];
-        if (pivot != 0.0) {
-            pivot_row = i;  
-            break;
-        }
-    }
+    // Perform Gaussian elimination down to get the upper triangular form
+    for (pivot_col = 0; pivot_col < a.n_width; pivot_col++, pivot_dia++) {
 
-    // If all elements in the first column are zero, return with failure status
-    if (pivot == 0.0) {
-        return status;
-    }
+        // Find the first pivot
+        for (pivot_row = pivot_dia, pivot = aug.content[pivot_row][pivot_col];
+             (pivot_row < aug.m_height) && (pivot == 0.0);
+             pivot = aug.content[pivot_row][pivot_col], pivot_row++);
+        cout << "pivot_row: " << pivot_row << "\r\n";
+        cout << "pivot_col: " << pivot_col << "\r\n";
+        cout << "pivot: " << pivot << "\r\n";
 
-    // If the pivot row is not at the top of the matrix, make it so
-    if (pivot_row != 0) {
-        if (a_aug.swap_rows(0, pivot_row) == tensor_status::SUCCESS) {
-            pivot_row = 0;
-        } else {
+        // If all elements in the column are zero, return with failure status
+        if (pivot == 0.0) {
             return status;
         }
+
+        // If the pivot row is not at the top of the matrix, make it so
+        if (pivot_row != pivot_dia) {
+            if (aug.swap_rows(pivot_dia, pivot_row)
+                == tensor_status::SUCCESS) {
+                pivot_row = pivot_dia;
+            } else {
+                return status;
+            }
+        }
+
+        /*
+         * Find the next row with a non-zero pivot element, if the pivot row is
+         * the target row, just scale it to one
+        */
+        if (pivot_row != (a.m_height - 1)) {
+            for (target_row = pivot_dia; target_row < a.m_height;
+                 target_row++) {
+                if ((aug.content[target_row][pivot_col] != 0.0)
+                    && (target_row > pivot_row)) {
+                    x = aug.content[pivot_row][pivot_col];
+                    x /= aug.content[target_row][pivot_col];
+                    break;
+                }
+            }
+            cout << "target_row: " << target_row << "\r\n";
+            cout << "x: " << x << "\r\n";
+
+            // Scale the target row
+            for (unsigned int i = 0; i < aug.n_width; i++) {
+                aug.content[target_row][i] *= x;
+            }
+            aug.print_tensor();
+
+            cout << "a_aug.content[pivot_row][1]: "
+                << aug.content[pivot_row][1] << "\r\n";
+
+            // Apply the subtraction
+            for (unsigned int i = 0; i < aug.n_width; i++) {
+                aug.content[target_row][i] -= aug.content[pivot_row][i];
+            }
+        } else if (pivot_row == (a.m_height - 1)) {
+            target_row = pivot_row;
+            x = 1.0 / aug.content[target_row][pivot_col];
+
+            cout << "target_row: " << target_row << "\r\n";
+            cout << "x: " << x << "\r\n";
+
+            // Scale the target row
+            for (unsigned int i = 0; i < aug.n_width; i++) {
+                aug.content[target_row][i] *= x;
+            }
+        }
+        aug.print_tensor();
     }
 
-    // Find the next row with a non-zero first element and zero it
-    target_row = 0;
-    for (unsigned int i = 1; i < a_aug.m_height; i++) {
-        target_row++;
-        if ((a_aug.content[i][0] != 0.0) && (target_row != pivot_row)) {
-            break;
+    // By this point, the upper triangle form is achieved
+    cout << "Down elimination complete, now going up\r\n";
+
+    // Perform Gaussian elimination back up, to get the identity matrix
+    pivot_row = a.m_height - 1;
+    pivot_col = a.n_width - 1;
+    for (int p = 0; p < ((int)a.m_height - 1); p++, pivot_row--, pivot_col--) {
+        cout << "pivot_row: " << pivot_row << "\r\n";
+        cout << "pivot_col: " << pivot_col << "\r\n";
+
+        if (pivot_row > 0) {
+            for (int q = 0, target_row = pivot_row - 1;
+                 q < (int)pivot_row; q++, target_row--) {
+
+                cout << "target_row: " << target_row << "\r\n";
+
+                if (aug.content[target_row][pivot_col] != 0.0) {
+                    if (aug.content[target_row][pivot_col] != 0.0) {
+                        x = aug.content[target_row][pivot_col];
+                        cout << "x: " << x << "\r\n";
+
+                        // Apply the subtraction
+                        for (unsigned int i = 0; i < aug.n_width; i++) {
+                            aug.content[target_row][i] -=
+                                (x * aug.content[pivot_row][i]);
+                        }
+                    }
+                }
+
+                aug.print_tensor();
+            }
         }
     }
 
-    x = 1.0/a_aug.content[target_row][0];
-
-    // Apply the subtraction
-    for (unsigned int i = 0; i < a.n_width; i++) {
-        a_aug.content[target_row][i] *= x;
-        cout << a_aug.content[pivot_row][i] << "\r\n";
-        a_aug.content[target_row][i] -= a_aug.content[pivot_row][i];
+    // Tranfer conents of augmented section of the original matrix
+    for (unsigned int i = 0; i < a.m_height; i++) {
+        for (unsigned int j = 0; j < a.n_width; j++) {
+            a_inv.content[i][j] = aug.content[i][a.n_width + j];
+        }
     }
 
-    a_aug.print_tensor();
-
     status = tensor_status::SUCCESS;
-    
+
     return status;
 }
 
