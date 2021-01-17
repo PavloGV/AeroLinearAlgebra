@@ -100,8 +100,6 @@ tensor_status invert(const tensor& a, tensor& a_inv) {
     double x = 0.0;
     unsigned int target_row = 0;
 
-    aug.print_tensor();
-
     // Perform Gaussian elimination down to get the upper triangular form
     for (pivot_col = 0; pivot_col < a.n_width; pivot_col++, pivot_dia++) {
 
@@ -109,9 +107,6 @@ tensor_status invert(const tensor& a, tensor& a_inv) {
         for (pivot_row = pivot_dia, pivot = aug.content[pivot_row][pivot_col];
              (pivot_row < aug.m_height) && (pivot == 0.0);
              pivot = aug.content[pivot_row][pivot_col], pivot_row++);
-        cout << "pivot_row: " << pivot_row << "\r\n";
-        cout << "pivot_col: " << pivot_col << "\r\n";
-        cout << "pivot: " << pivot << "\r\n";
 
         // If all elements in the column are zero, return with failure status
         if (pivot == 0.0) {
@@ -142,17 +137,11 @@ tensor_status invert(const tensor& a, tensor& a_inv) {
                     break;
                 }
             }
-            cout << "target_row: " << target_row << "\r\n";
-            cout << "x: " << x << "\r\n";
 
             // Scale the target row
             for (unsigned int i = 0; i < aug.n_width; i++) {
                 aug.content[target_row][i] *= x;
             }
-            aug.print_tensor();
-
-            cout << "a_aug.content[pivot_row][1]: "
-                << aug.content[pivot_row][1] << "\r\n";
 
             // Apply the subtraction
             for (unsigned int i = 0; i < aug.n_width; i++) {
@@ -162,37 +151,27 @@ tensor_status invert(const tensor& a, tensor& a_inv) {
             target_row = pivot_row;
             x = 1.0 / aug.content[target_row][pivot_col];
 
-            cout << "target_row: " << target_row << "\r\n";
-            cout << "x: " << x << "\r\n";
-
             // Scale the target row
             for (unsigned int i = 0; i < aug.n_width; i++) {
                 aug.content[target_row][i] *= x;
             }
         }
-        aug.print_tensor();
     }
 
     // By this point, the upper triangle form is achieved
-    cout << "Down elimination complete, now going up\r\n";
 
     // Perform Gaussian elimination back up, to get the identity matrix
     pivot_row = a.m_height - 1;
     pivot_col = a.n_width - 1;
     for (int p = 0; p < ((int)a.m_height - 1); p++, pivot_row--, pivot_col--) {
-        cout << "pivot_row: " << pivot_row << "\r\n";
-        cout << "pivot_col: " << pivot_col << "\r\n";
 
         if (pivot_row > 0) {
             for (int q = 0, target_row = pivot_row - 1;
                  q < (int)pivot_row; q++, target_row--) {
 
-                cout << "target_row: " << target_row << "\r\n";
-
                 if (aug.content[target_row][pivot_col] != 0.0) {
                     if (aug.content[target_row][pivot_col] != 0.0) {
                         x = aug.content[target_row][pivot_col];
-                        cout << "x: " << x << "\r\n";
 
                         // Apply the subtraction
                         for (unsigned int i = 0; i < aug.n_width; i++) {
@@ -202,7 +181,6 @@ tensor_status invert(const tensor& a, tensor& a_inv) {
                     }
                 }
 
-                aug.print_tensor();
             }
         }
     }
