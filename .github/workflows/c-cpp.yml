@@ -16,4 +16,4 @@ jobs:
     - name: Run makefile all
       run: make all
     - name: run tensor library test executable
-      run: ./build/apps/program.exe
+      run: ./build/apps/program.out
