@@ -17,7 +17,9 @@ jobs:
       run: | 
         make all
         ls
-        cd /build/apps/
+        cd build
+        ls
+        cd apps
         ls
         ./program
       
