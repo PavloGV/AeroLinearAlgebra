@@ -13,12 +13,11 @@ jobs:
     - uses: actions/checkout@master
     - name: Run makefile clean
       run: make clean
-    - name: Run makefile all
-      run: make all
-    - name: run tensor library test executable
-      run: |
+    - name: Run makefile all and execute main
+      run: | 
+        make all
+        ls
         cd /build/apps/
         ls
         ./program
-        
       
