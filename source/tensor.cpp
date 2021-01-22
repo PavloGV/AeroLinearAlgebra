@@ -406,6 +406,6 @@ int main(void) {
         a_inv.print_tensor();
     }
 #endif
-    return 1;
+    return 0;
 }
 #endif
