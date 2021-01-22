@@ -11,10 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: Run makefile clean
-      run: make clean
-    - name: Run makefile all and execute main
-      run: | 
+    - name: Run makefile clean, build, then execute
+      run: |
+        make clean
         make all
         ls
         cd build
