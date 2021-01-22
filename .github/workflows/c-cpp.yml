@@ -20,5 +20,4 @@ jobs:
         ls
         cd apps
         ls
-        ./program
       
