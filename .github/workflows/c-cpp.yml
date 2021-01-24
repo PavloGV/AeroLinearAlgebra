@@ -15,5 +15,5 @@ jobs:
       run: |
         make clean
         make all
-        ./build/apps/program
+        ./build/apps/tensor
       
