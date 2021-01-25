@@ -7,6 +7,9 @@
 * @author Pavlo Vlastos
 */
 
+#ifndef TENSOR_H
+#define TENSOR_H
+
 /******************************************************************************
  * INCLUDES
  *****************************************************************************/
@@ -18,7 +21,8 @@ using namespace std;
 /******************************************************************************
  * GLOBAL VARIABLES AND DATATYPES
  *****************************************************************************/
-enum class tensor_status {
+enum class tensor_status
+{
     SUCCESS = 0,
     FAILURE
 };
@@ -26,30 +30,36 @@ enum class tensor_status {
 /******************************************************************************
  * CLASS DEFINITION AND FUNCTION DECLARATIONS
  *****************************************************************************/
-class tensor {
+class tensor
+{
 private:
     uint8_t dimension = 3;
 
 public:
-    unsigned int m_height;              /* Number of rows*/
-    unsigned int n_width;               /* Number of columns*/
+    unsigned int m_height; /* Number of rows*/
+    unsigned int n_width;  /* Number of columns*/
     vector<vector<double>> content;
 
-    tensor(int m_rows, int n_cols) {    /* Tensor class constructor*/
+    tensor(int m_rows, int n_cols)
+    { /* Tensor class constructor*/
         vector<double> rows;
 
-        if (m_rows < 1) { /* Check input number of rows */
+        if (m_rows < 1)
+        { /* Check input number of rows */
             m_rows = 1;
         }
 
-        if (n_cols < 1) { /* Check input number of columns */
+        if (n_cols < 1)
+        { /* Check input number of columns */
             n_cols = 1;
         }
 
-        for (int i_col = 0; i_col < n_cols; i_col++) {
+        for (int i_col = 0; i_col < n_cols; i_col++)
+        {
             rows.push_back(0.0);
         }
-        for (int i_row = 0; i_row < m_rows; i_row++) {
+        for (int i_row = 0; i_row < m_rows; i_row++)
+        {
             content.push_back(rows);
         }
 
@@ -57,22 +67,27 @@ public:
         n_width = content[0].size();
     }
 
-    tensor(const vector<vector<double>>& v) { /* Tensor class constructor
+    tensor(const vector<vector<double>> &v)
+    { /* Tensor class constructor
                                                * overloaded */
         vector<double> rows;
 
         unsigned int m_rows = v.size();
         unsigned int n_cols = v[0].size();
 
-        for (unsigned int i_col = 0; i_col < n_cols; i_col++) {
+        for (unsigned int i_col = 0; i_col < n_cols; i_col++)
+        {
             rows.push_back(0.0);
         }
-        for (unsigned int i_row = 0; i_row < m_rows; i_row++) {
+        for (unsigned int i_row = 0; i_row < m_rows; i_row++)
+        {
             content.push_back(rows);
         }
 
-        for (unsigned int i_row = 0; i_row < m_rows; i_row++) {
-            for (unsigned int i_col = 0; i_col < n_cols; i_col++) {
+        for (unsigned int i_row = 0; i_row < m_rows; i_row++)
+        {
+            for (unsigned int i_col = 0; i_col < n_cols; i_col++)
+            {
                 content[i_row][i_col] = v[i_row][i_col];
             }
         }
@@ -80,7 +95,6 @@ public:
         m_height = content.size();
         n_width = content[0].size();
     }
-
 
     /**
      * @brief set a the value of a tensor element
@@ -91,7 +105,7 @@ public:
      * @return Tensor status (SUCCESS or FAILURE)
     */
     tensor_status set_tensor_element(const unsigned int row,
-                                       const unsigned int col, double value);
+                                     const unsigned int col, double value);
 
     /**
     * @brief Set all elements of the tensor
@@ -99,7 +113,7 @@ public:
     * @param avv A vector of vectors
     * @return Tensor status (SUCCESS or FAILURE)
     */
-    tensor_status set_tensor_content(const vector<vector<double>>& avv);
+    tensor_status set_tensor_content(const vector<vector<double>> &avv);
 
     /**
      * @brief Swap the rows of a tensor content
@@ -122,26 +136,26 @@ public:
  * @param b Another tensor
  * @return c A new tensor, being the matrix product of a and b.
  */
-tensor multiply(const tensor& a, const tensor& b);
+tensor multiply(const tensor &a, const tensor &b);
 
 /**
  * @brief Makes a copy of the immediate tensor
  * @return copy of the immediate tensor
  */
-tensor copy(const tensor& a);
+tensor copy(const tensor &a);
 
 /**
  * @brief tansposes the immediate tensor
  */
-tensor transpose(const tensor& a);
+tensor transpose(const tensor &a);
 
-tensor_status invert(const tensor& a, tensor& a_inv);
+tensor_status invert(const tensor &a, tensor &a_inv);
 
 /**
  * @brief Performs gaussian elimination to row reduce tensor to upper
  * triangular form.
 */
-tensor gaussian_elimination(const tensor&a);
+tensor gaussian_elimination(const tensor &a);
 
 /**
  * @brief Appends a tensor with another tensor if they have the same height
@@ -149,7 +163,7 @@ tensor gaussian_elimination(const tensor&a);
  * @param b Another tensor
  * @return c The width-augmented tensor
 */
-tensor augment_width(const tensor& a, const tensor& b);
+tensor augment_width(const tensor &a, const tensor &b);
 
 /**
  * @brief Appends a tensor with another tensor if they have the same width
@@ -157,7 +171,7 @@ tensor augment_width(const tensor& a, const tensor& b);
  * @param b Another tensor
  * @return c The height-augmented tensor
 */
-tensor augment_height(const tensor& a, const tensor& b);
+tensor augment_height(const tensor &a, const tensor &b);
 
 /**
  * @brief Makes an identity matrix, doesn't have to be square
@@ -165,3 +179,11 @@ tensor augment_height(const tensor& a, const tensor& b);
  * @param n The number of columns
 */
 tensor eye(unsigned int m, unsigned int n);
+
+/**
+ * @brief Computes the norm or p-norm of a rank 1 tensor
+ * @param a A tensor of rank 1
+*/
+double norm(const tensor &a);
+double norm(const tensor &a, const double p);
+#endif /* TENSOR_H */
