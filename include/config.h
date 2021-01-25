@@ -1,10 +1,10 @@
 /**
- * @file tensor_config.h
+ * @file config.h
  * 
- * @brief Configurations for tensor class and subsequent tests
+ * @brief Configurations for various classes and subsequent tests
  */
 
-#define TESTING
+#define TESTING_TENSOR
 //#define TEST_TENSOR_CLASS_CONSTRUCTOR
 //#define TEST_TENSOR_MULTIPLICATION
 //#define TEST_TENSOR_COPY
@@ -15,3 +15,5 @@
 //#define TEST_TENSOR_EYE
 #define TEST_TENSOR_INVERT
 #define TEST_TENSOR_NORM
+
+#define TESTING_PARTICLE

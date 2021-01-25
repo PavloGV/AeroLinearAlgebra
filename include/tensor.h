@@ -14,8 +14,8 @@
  * INCLUDES
  *****************************************************************************/
 #include <vector>
-#include "tensor_config.h"
 #include <stdint.h>
+#include "config.h"
 using namespace std;
 
 /******************************************************************************
@@ -126,7 +126,7 @@ public:
     /**
      * @brief print the tensor
     */
-    void print_tensor(void);
+    void print(void);
 #endif
 };
 
@@ -137,6 +137,14 @@ public:
  * @return c A new tensor, being the matrix product of a and b.
  */
 tensor multiply(const tensor &a, const tensor &b);
+
+/**
+ * @brief add two tensors together to make a new tensor
+ * @param a A tensor
+ * @param b Another tensor
+ * @return c A new tensor, being the matrix addition of a and b.
+ */
+tensor add(const tensor &a, const tensor &b);
 
 /**
  * @brief Makes a copy of the immediate tensor
@@ -183,6 +191,7 @@ tensor eye(unsigned int m, unsigned int n);
 /**
  * @brief Computes the norm or p-norm of a rank 1 tensor
  * @param a A tensor of rank 1
+ * @return The norm or p-norm of a tensor
 */
 double norm(const tensor &a);
 double norm(const tensor &a, const double p);

@@ -8,7 +8,6 @@
 */
 
 #include "tensor.h"
-#include "tensor_config.h"
 #include <math.h>
 
 #ifdef TESTING
@@ -37,7 +36,7 @@ tensor_status tensor::set_tensor_element(const unsigned int row,
 
 tensor_status tensor::set_tensor_content(const vector<vector<double>> &vv)
 {
-    tensor_status status = tensor_status::SUCCESS;
+    tensor_status status = tensor_status::FAILURE;
 
     if ((vv.size() == m_height) && (vv[0].size() == n_width))
     {
@@ -48,6 +47,7 @@ tensor_status tensor::set_tensor_content(const vector<vector<double>> &vv)
                 content[row][col] = vv[row][col];
             }
         }
+        status = tensor_status::SUCCESS;
     }
 
     return status;
@@ -358,10 +358,10 @@ double norm(const tensor &a, const double p)
 /******************************************************************************
  * UNIT TESTS
  *****************************************************************************/
-#ifdef TESTING
+#ifdef TESTING_TENSOR
 #include <iostream>
 
-void tensor::print_tensor(void)
+void tensor::print(void)
 {
     for (unsigned int row = 0; row < m_height; row++)
     {
@@ -390,10 +390,10 @@ int main(void)
 
         tensor tnsr0(rows, cols);
 
-        tnsr0.print_tensor();
+        tnsr0.print();
 
         tensor a(vector<vector<double>>{{1, 2}, {2, 1}, {1, 2}, {2, 1}});
-        a.print_tensor();
+        a.print();
     }
 #endif
 
@@ -404,14 +404,14 @@ int main(void)
         tensor b(vector<vector<double>>{{1}, {2}, {3}});
 
         cout << "first operand tensor:\r\n";
-        a.print_tensor();
+        a.print();
 
         cout << "second operand tensor:\r\n";
-        b.print_tensor();
+        b.print();
 
         tensor c = multiply(a, b);
 
-        c.print_tensor();
+        c.print();
     }
 #endif
 #ifdef TEST_TENSOR_COPY
@@ -420,8 +420,8 @@ int main(void)
         cout << "first operand tensor to be copied:\r\n";
         tensor a(vector<vector<double>>{{1, 2, 5}, {2, 1, 50.02}});
         tensor b = copy(a);
-        a.print_tensor();
-        b.print_tensor();
+        a.print();
+        b.print();
     }
 #endif
 #ifdef TEST_TENSOR_TRANSPOSE
@@ -430,64 +430,64 @@ int main(void)
         cout << "first operand tensor to be tranposed:\r\n";
         tensor a(vector<vector<double>>{{1.0, 3.2, 0.5}, {0.2, 1.0, 50.02}, {0.1, 11, 25.01}});
         tensor b = transpose(a);
-        a.print_tensor();
-        b.print_tensor();
+        a.print();
+        b.print();
     }
 #endif
 #ifdef TEST_TENSOR_SWAP_ROWS
     {
         cout << "TEST_TENSOR_SWAP_ROWS\r\n";
         tensor a(vector<vector<double>>{{1.0, 3.2, 0.5}, {0.2, 1.0, 50.02}, {0.1, 11, 25.01}});
-        a.print_tensor();
+        a.print();
         a.swap_rows(0, 2);
-        a.print_tensor();
+        a.print();
     }
 #endif
 #ifdef TEST_TENSOR_AUGMENT_WIDTH
     {
         cout << "TEST_TENSOR_AUGMENT_WIDTH\r\n";
         tensor a(vector<vector<double>>{{1.0, 2.0, 3.0}, {0.0, 1.0, 4.0}, {5.0, 6.0, 1.0}});
-        a.print_tensor();
+        a.print();
 
         tensor b = copy(a);
-        b.print_tensor();
+        b.print();
 
         tensor c = augment_width(a, b);
-        c.print_tensor();
+        c.print();
     }
 #endif
 #ifdef TEST_TENSOR_AUGMENT_HEIGHT
     {
         cout << "TEST_TENSOR_AUGMENT_HEIGHT\r\n";
         tensor a(vector<vector<double>>{{1.0, 2.0, 3.0}, {0.0, 1.0, 4.0}, {5.0, 6.0, 1.0}});
-        a.print_tensor();
+        a.print();
 
         tensor b = copy(a);
-        b.print_tensor();
+        b.print();
 
         tensor c = augment_height(a, b);
-        c.print_tensor();
+        c.print();
     }
 #endif
 #ifdef TEST_TENSOR_EYE
     {
         cout << "TEST_TENSOR_EYE\r\n";
         tensor a = eye(4, 4);
-        a.print_tensor();
+        a.print();
     }
 #endif
 #ifdef TEST_TENSOR_INVERT
     {
         cout << "TEST_TENSOR_INVERT\r\n";
         tensor a(vector<vector<double>>{{1.0, 2.0, 3.0}, {0.0, 1.0, 4.0}, {5.0, 6.0, 1.0}});
-        a.print_tensor();
+        a.print();
 
         tensor a_inv(a.m_height, a.n_width);
-        a_inv.print_tensor();
+        a_inv.print();
 
         invert(a, a_inv);
 
-        a_inv.print_tensor();
+        a_inv.print();
     }
 #endif
 #ifdef TEST_TENSOR_NORM
@@ -495,7 +495,7 @@ int main(void)
         cout << "TEST_TENSOR_NORM\r\n";
         tensor a(vector<vector<double>>{{1.0}, {2.0}, {3.0}});
 
-        a.print_tensor();
+        a.print();
 
         cout << "norm(a) = " << norm(a) << "\r\n";
 
