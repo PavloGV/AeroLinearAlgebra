@@ -14,6 +14,7 @@
  *****************************************************************************/
 #include "particle.h"
 #include "tensor.h"
+#include <vector>
 
 /******************************************************************************
  * CLASS DEFINITION AND FUNCTION DECLARATIONS
@@ -24,31 +25,19 @@ private:
     uint8_t dimension = 3;
     double dt = 0.001;
 
-    tensor phi(vector<vector<double>>{
-        {1.0, 0.0, 0.0, dt, 0.0, 0.0},
-        {0.0, 1.0, 0.0, dt, 0.0, 0.0},
-        {0.0, 0.0, 1.0, 0.0, dt, 0.0},
-        {0.0, 0.0, 0.0, 1.0, 0.0, dt},
-        {0.0, 0.0, 0.0, 0.0, 1.0, 0.0},
-        {0.0, 0.0, 0.0, 0.0, 0.0, 1.0}});
-
-    tensor gamma(vector<vector<double>>{
-        {(dt * dt / mass), 0.0, 0.0},
-        {0.0, (dt * dt / mass), 0.0},
-        {0.0, 0.0, (dt * dt / mass)},
-        {(dt / mass), 0.0, 0.0},
-        {0.0, (dt / mass), 0.0},
-        {0.0, 0.0, (dt / mass)}});
+    tensor state;
+    tensor phi;
+    tensor gamma;
 
 public:
     double radius = 1.0;
     double mass = 0.0;
 
-    tensor state(3 * dimension, 1);
-
     /* Class constructors */
     particle(double r, double m, double x, double y, double z, double dx,
-             double dy, double dz)
+             double dy, double dz) : state(2 * dimension),
+                                     phi(2 * dimension),
+                                     gamma(2 * dimension) // Initializer list
     {
         radius = r; // radius
         mass = m;   // mass
@@ -62,42 +51,24 @@ public:
         state.content[3][0] = dx; // dx
         state.content[4][0] = dy; // dy
         state.content[5][0] = dz; // dz
-    }
-    particle(double r, double m, const vector<double> &a)
-    {
-        radius = r; // radius
-        mass = m;   // mass
 
-        if (a.size() == (3 * dimension))
-        {
-            // Position
-            state.content[0][0] = a[0]; // x
-            state.content[1][0] = a[1]; // y
-            state.content[2][0] = a[2]; // z
+        // // Dynamics Matrix (State Transition Matrix)
+        // phi.set_tensor_content(vector<vector<double>>{
+        //     {1.0, 0.0, 0.0, dt, 0.0, 0.0},
+        //     {0.0, 1.0, 0.0, dt, 0.0, 0.0},
+        //     {0.0, 0.0, 1.0, 0.0, dt, 0.0},
+        //     {0.0, 0.0, 0.0, 1.0, 0.0, dt},
+        //     {0.0, 0.0, 0.0, 0.0, 1.0, 0.0},
+        //     {0.0, 0.0, 0.0, 0.0, 0.0, 1.0}});
 
-            // Velocity
-            state.content[3][0] = a[3]; // dx
-            state.content[4][0] = a[4]; // dy
-            state.content[5][0] = a[5]; // dz
-        }
-    }
-    particle(double r, double m, const tensor &a)
-    {
-        radius = r; // radius
-        mass = m;   // mass
-
-        if (a.m_height == (3 * dimension))
-        {
-            // Position
-            state.content[0][0] = a.content[0][0]; // x
-            state.content[1][0] = a.content[1][0]; // y
-            state.content[2][0] = a.content[2][0]; // z
-
-            // Velocity
-            state.content[3][0] = a.content[3][0]; // dx
-            state.content[4][0] = a.content[4][0]; // dy
-            state.content[5][0] = a.content[5][0]; // dz
-        }
+        // // Input Matrix
+        // gamma.set_tensor_content(vector<vector<double>>{
+        //     {(dt * dt / mass), 0.0, 0.0},
+        //     {0.0, (dt * dt / mass), 0.0},
+        //     {0.0, 0.0, (dt * dt / mass)},
+        //     {(dt / mass), 0.0, 0.0},
+        //     {0.0, (dt / mass), 0.0},
+        //     {0.0, 0.0, (dt / mass)}});
     }
 
     /**
@@ -135,12 +106,10 @@ public:
     */
     uint8_t get_dimension(void);
 
-#ifdef TESTING_PARTICLE
     /**
      * @brief Print out the attributes of the particle
     */
     void print(void);
-#endif
 };
 
 #endif /* PARTICLE_H */

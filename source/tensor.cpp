@@ -1,18 +1,14 @@
 /**
 * @file tensor.cpp
 *
-* @brief A class representing tensors for complex algebraic manipuplations of
-* and things within coordinate frames in 3-dimensional space
+* @brief The base class representing tensors for complex algebraic 
+* manipuplations of and things within coordinate frames in 3-dimensional space
 *
 * @author Pavlo Vlastos
 */
 
 #include "tensor.h"
 #include <math.h>
-
-#ifdef TESTING
-#include <iostream>
-#endif
 
 /******************************************************************************
  * PUBLIC FUNCTION IMPLEMENTATIONS
@@ -64,7 +60,6 @@ tensor multiply(const tensor &a, const tensor &b)
         /* Iterate through rows in tensor c */
         for (unsigned int i = 0; i < a.m_height; i++)
         {
-
             /* Iterate through columns in tensor b */
             for (unsigned int j = 0; j < b.n_width; j++)
             {
@@ -355,12 +350,6 @@ double norm(const tensor &a, const double p)
     return powf(x, (double)(1.0 / p));
 }
 
-/******************************************************************************
- * UNIT TESTS
- *****************************************************************************/
-#ifdef TESTING_TENSOR
-#include <iostream>
-
 void tensor::print(void)
 {
     for (unsigned int row = 0; row < m_height; row++)
@@ -374,6 +363,11 @@ void tensor::print(void)
     }
     cout << "Dimensions: " << m_height << " x " << n_width << "\n";
 }
+
+/******************************************************************************
+ * UNIT TESTS
+ *****************************************************************************/
+#ifdef TESTING_TENSOR
 
 using namespace std;
 

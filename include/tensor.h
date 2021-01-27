@@ -1,8 +1,8 @@
 /**
 * @file tensor.h
 *
-* @brief A class representing tensors for complex algebraic manipuplations of
-* and things within coordinate frames in 3-dimensional space
+* @brief The base class representing tensors for complex algebraic 
+* manipuplations of and things within coordinate frames in 3-dimensional space
 *
 * @author Pavlo Vlastos
 */
@@ -15,6 +15,7 @@
  *****************************************************************************/
 #include <vector>
 #include <stdint.h>
+#include <iostream>
 #include "config.h"
 using namespace std;
 
@@ -40,7 +41,7 @@ public:
     unsigned int n_width;  /* Number of columns*/
     vector<vector<double>> content;
 
-    tensor(int m_rows, int n_cols)
+    tensor(unsigned int m_rows, unsigned int n_cols)
     { /* Tensor class constructor*/
         vector<double> rows;
 
@@ -54,11 +55,31 @@ public:
             n_cols = 1;
         }
 
-        for (int i_col = 0; i_col < n_cols; i_col++)
+        for (unsigned int i_col = 0; i_col < n_cols; i_col++)
         {
             rows.push_back(0.0);
         }
-        for (int i_row = 0; i_row < m_rows; i_row++)
+        for (unsigned int i_row = 0; i_row < m_rows; i_row++)
+        {
+            content.push_back(rows);
+        }
+
+        m_height = content.size();
+        n_width = content[0].size();
+    }
+    tensor(unsigned int m_rows)
+    {
+        vector<double> rows;
+
+        /* Check input number of rows */
+        if (m_rows < 1)
+        { 
+            m_rows = 1;
+        }
+
+        rows.push_back(0.0); // One column
+        
+        for (unsigned int i_row = 0; i_row < m_rows; i_row++)
         {
             content.push_back(rows);
         }
@@ -122,12 +143,11 @@ public:
      * @return Tensor status (SUCCESS or FAILURE)
     */
     tensor_status swap_rows(int row_a, int row_b);
-#ifdef TESTING_TENSOR
+
     /**
      * @brief print the tensor
     */
     void print(void);
-#endif
 };
 
 /**
