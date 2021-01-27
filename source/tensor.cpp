@@ -22,7 +22,7 @@ tensor_status tensor::set_tensor_element(const unsigned int row,
                                          double value)
 {
     tensor_status status = tensor_status::SUCCESS;
-    if ((row >= 0) && (row < m_height) && (col >= 0) && (col < n_width))
+    if ((row < m_height) && (col < n_width))
     {
         content[row][col] = value;
     }

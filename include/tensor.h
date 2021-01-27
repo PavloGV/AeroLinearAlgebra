@@ -122,7 +122,7 @@ public:
      * @return Tensor status (SUCCESS or FAILURE)
     */
     tensor_status swap_rows(int row_a, int row_b);
-#ifdef TESTING
+#ifdef TESTING_TENSOR
     /**
      * @brief print the tensor
     */
