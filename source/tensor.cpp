@@ -9,6 +9,7 @@
 
 #include "tensor.h"
 #include <math.h>
+using namespace std;
 
 /******************************************************************************
  * PUBLIC FUNCTION IMPLEMENTATIONS
@@ -368,8 +369,6 @@ void tensor::print(void)
  * UNIT TESTS
  *****************************************************************************/
 #ifdef TESTING_TENSOR
-
-using namespace std;
 
 int main(void)
 {

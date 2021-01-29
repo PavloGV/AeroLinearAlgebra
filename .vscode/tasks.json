@@ -2,30 +2,26 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "cppbuild",
-			"label": "C/C++: cpp.exe build active file",
-			"command": "C:\\MinGW\\bin\\g++.exe",
+			"label": "clean",
+			"type": "shell",
+			"command": "make",
 			"args": [
-				"-g",
-				"-Wall",
-				"-Wextra",
-				"-I",
-				"${workspaceFolder}\\include",
-				"${file}",
-				"-o",
-				"${workspaceFolder}\\build\\apps\\tensor.exe"
+				"clean"
+			]
+		},
+		{
+			"label": "build",
+			"type": "shell",
+			"command": "make",
+			"args": [
+				"all"
 			],
-			"options": {
-				"cwd": "C:\\MinGW\\bin"
-			},
-			"problemMatcher": [
-				"$gcc"
-			],
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"detail": "compiler: C:\\MinGW\\bin\\cpp.exe"
+			"dependsOn": "clean"
 		}
-	]
+	],
+	"group": {
+		"kind": "build",
+		"isDefault": true
+	},
+	"problemMatcher": "$gcc"
 }
