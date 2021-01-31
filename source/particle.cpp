@@ -97,6 +97,8 @@ void particle::print(void)
     cout << "radius = " << radius << "\r\n";
     cout << "mass = " << mass << "\r\n";
     state.print();
+    phi.print();
+    gamma.print();
 }
 /******************************************************************************
  * UNIT TESTS
