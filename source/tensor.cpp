@@ -11,6 +11,9 @@
 #include <math.h>
 using namespace std;
 
+#define QUATERNION_HEIGHT 4
+#define QUATERNION_WIDTH 1
+
 /******************************************************************************
  * PUBLIC FUNCTION IMPLEMENTATIONS
  *****************************************************************************/
@@ -349,6 +352,25 @@ double norm(const tensor &a, const double p)
     }
 
     return powf(x, (double)(1.0 / p));
+}
+
+tensor_status tensor::rotate_quaternion(double angle)
+{
+    tensor_status status = tensor_status::FAILURE;
+
+    double q_scale = sin(angle/2.0);
+
+    if ((m_height == QUATERNION_HEIGHT) && (n_width == QUATERNION_WIDTH))
+    {
+        content[0][0] = cos(angle/2.0);
+        content[1][0] *= q_scale;
+        content[2][0] *= q_scale;
+        content[3][0] *= q_scale;
+        
+        status = tensor_status::SUCCESS;
+    }
+
+    return status
 }
 
 void tensor::print(void)

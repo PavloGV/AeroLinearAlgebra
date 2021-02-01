@@ -20,9 +20,16 @@
 
 #endif
 
-#define TESTING_PARTICLE
+// #define TESTING_PARTICLE
 #ifdef TESTING_PARTICLE
 
 #define TEST_PARTICLE_PRINT
+
+#endif
+
+#define TESTING_QUATERNIONS
+#ifdef TESTING_QUATERNIONS
+
+#define TEST_QUARTERNION_PRINT
 
 #endif

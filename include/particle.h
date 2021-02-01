@@ -24,36 +24,38 @@ class particle
 private:
     uint8_t dimension = 3;
     double dt = 0.001;
-    
+
     double radius = 1.0; /* Must have non-zero default values */
     double mass = 1.0;
-
-    /* Body-frame axes */
-    vector<double> xb{1.0, 0.0, 0.0};
-    vector<double> yb{1.0, 1.0, 0.0};
-    vector<double> zb{1.0, 0.0, 1.0};
 
     tensor state;
     tensor phi;
     tensor gamma;
 
+    tensor body_frame; /* Body-frame axes */
+
 public:
     /* Class constructors */
-    particle(double x, double y, double z) : state(2 * dimension), // Initializer list
-                     phi(vector<vector<double>>{
-                         {1.0, 0.0, 0.0, dt, 0.0, 0.0},
-                         {0.0, 1.0, 0.0, dt, 0.0, 0.0},
-                         {0.0, 0.0, 1.0, 0.0, dt, 0.0},
-                         {0.0, 0.0, 0.0, 1.0, 0.0, dt},
-                         {0.0, 0.0, 0.0, 0.0, 1.0, 0.0},
-                         {0.0, 0.0, 0.0, 0.0, 0.0, 1.0}}),
-                     gamma(vector<vector<double>>{
-                         {(dt * dt / mass), 0.0, 0.0},
-                         {0.0, (dt * dt / mass), 0.0},
-                         {0.0, 0.0, (dt * dt / mass)},
-                         {(dt / mass), 0.0, 0.0},
-                         {0.0, (dt / mass), 0.0},
-                         {0.0, 0.0, (dt / mass)}})
+    particle(double x, double y, double z)
+        : state(2 * dimension), // Initializer list
+          phi(vector<vector<double>>{
+              {1.0, 0.0, 0.0, dt, 0.0, 0.0},
+              {0.0, 1.0, 0.0, dt, 0.0, 0.0},
+              {0.0, 0.0, 1.0, 0.0, dt, 0.0},
+              {0.0, 0.0, 0.0, 1.0, 0.0, dt},
+              {0.0, 0.0, 0.0, 0.0, 1.0, 0.0},
+              {0.0, 0.0, 0.0, 0.0, 0.0, 1.0}}),
+          gamma(vector<vector<double>>{
+              {(dt * dt / mass), 0.0, 0.0},
+              {0.0, (dt * dt / mass), 0.0},
+              {0.0, 0.0, (dt * dt / mass)},
+              {(dt / mass), 0.0, 0.0},
+              {0.0, (dt / mass), 0.0},
+              {0.0, 0.0, (dt / mass)}}),
+          body_frame(vector<vector<double>>{
+              {1.0, 0.0, 0.0},
+              {0.0, 1.0, 0.0},
+              {0.0, 0.0, 1.0}})
     {
         // Position
         state.content[0][0] = x; // x
@@ -80,7 +82,11 @@ public:
                                          {0.0, 0.0, (dt * dt / mass)},
                                          {(dt / mass), 0.0, 0.0},
                                          {0.0, (dt / mass), 0.0},
-                                         {0.0, 0.0, (dt / mass)}})
+                                         {0.0, 0.0, (dt / mass)}}),
+                                     body_frame(vector<vector<double>>{
+                                         {1.0, 0.0, 0.0},
+                                         {0.0, 1.0, 0.0},
+                                         {0.0, 0.0, 1.0}})
     {
         radius = r; // radius
         mass = m;   // mass

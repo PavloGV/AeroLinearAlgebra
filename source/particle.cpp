@@ -109,7 +109,7 @@ int main(void)
 {
 #ifdef TEST_PARTICLE_PRINT
     {
-        particle a(1.2, 2.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+        particle a(1.2, 2.5, 0.0);
         a.print();
     }
 #endif
