@@ -4,7 +4,7 @@
  * @brief Configurations for various classes and subsequent tests
  */
 
-// #define TESTING_TENSOR
+#define TESTING_TENSOR
 #ifdef TESTING_TENSOR
 
 #define TEST_TENSOR_CLASS_CONSTRUCTOR
@@ -17,6 +17,7 @@
 #define TEST_TENSOR_EYE
 #define TEST_TENSOR_INVERT
 #define TEST_TENSOR_NORM
+#define TEST_TENSOR_DCM
 
 #endif
 
@@ -27,7 +28,7 @@
 
 #endif
 
-#define TESTING_QUATERNIONS
+// #define TESTING_QUATERNIONS
 #ifdef TESTING_QUATERNIONS
 
 #define TEST_QUARTERNION_PRINT

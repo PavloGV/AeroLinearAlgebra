@@ -11,6 +11,7 @@
 #include <math.h>
 using namespace std;
 
+#define DIM 3
 #define QUATERNION_HEIGHT 4
 #define QUATERNION_WIDTH 1
 
@@ -358,19 +359,41 @@ tensor_status tensor::rotate_quaternion(double angle)
 {
     tensor_status status = tensor_status::FAILURE;
 
-    double q_scale = sin(angle/2.0);
+    double q_scale = sin(angle / 2.0);
 
     if ((m_height == QUATERNION_HEIGHT) && (n_width == QUATERNION_WIDTH))
     {
-        content[0][0] = cos(angle/2.0);
+        content[0][0] = cos(angle / 2.0);
         content[1][0] *= q_scale;
         content[2][0] *= q_scale;
         content[3][0] *= q_scale;
-        
+
         status = tensor_status::SUCCESS;
     }
 
-    return status
+    return status;
+}
+
+tensor_status create_dcm(tensor &dcm, double psi, double theta, double phi)
+{
+    if ((dcm.m_height != DIM) || (dcm.n_width != DIM))
+    {
+        return tensor_status::FAILURE;
+    }
+
+    dcm.content[0][0] = cos(psi) * cos(theta);
+    dcm.content[0][1] = sin(psi) * cos(theta);
+    dcm.content[0][2] = -sin(theta);
+
+    dcm.content[1][0] = cos(psi) * sin(theta) * sin(phi) - sin(psi) * cos(phi);
+    dcm.content[1][1] = sin(psi) * sin(theta) * sin(phi) + cos(psi) * cos(phi);
+    dcm.content[1][2] = cos(theta) * sin(phi);
+
+    dcm.content[2][0] = cos(psi) * sin(theta) * cos(phi) + sin(psi) * sin(phi);
+    dcm.content[2][1] = sin(psi) * sin(theta) * cos(phi) - cos(psi) * sin(phi);
+    dcm.content[2][2] = cos(theta) * cos(phi);
+
+    return tensor_status::SUCCESS;
 }
 
 void tensor::print(void)
@@ -518,6 +541,24 @@ int main(void)
 
         cout << "p = " << p << "\r\n";
         cout << "p-norm(a) = " << norm(a, p) << "\r\n";
+    }
+#endif
+#ifdef TEST_TENSOR_DCM
+    {
+        cout << "TEST_TENSOR_DCM\r\n";
+
+        tensor dcm(3,3);
+        tensor a(vector<vector<double>>{{1.0}, {0.0}, {0.0}});
+
+        dcm.print();
+        a.print();
+
+        create_dcm(dcm, 30.0*M_PI/180.0, 0.0, 0.0);
+        dcm.print();
+
+        tensor b = multiply(dcm, a);
+
+        b.print();
     }
 #endif
     return 0;

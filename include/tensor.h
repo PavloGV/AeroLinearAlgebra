@@ -42,7 +42,7 @@ public:
     vector<vector<double>> content;
 
     tensor(unsigned int m_rows, unsigned int n_cols)
-    { /* Tensor class constructor*/
+    {
         vector<double> rows;
 
         if (m_rows < 1)
@@ -67,18 +67,20 @@ public:
         m_height = content.size();
         n_width = content[0].size();
     }
+
+    /* Tensor class constructor overloaded */
     tensor(unsigned int m_rows)
     {
         vector<double> rows;
 
         /* Check input number of rows */
         if (m_rows < 1)
-        { 
+        {
             m_rows = 1;
         }
 
         rows.push_back(0.0); // One column
-        
+
         for (unsigned int i_row = 0; i_row < m_rows; i_row++)
         {
             content.push_back(rows);
@@ -88,9 +90,9 @@ public:
         n_width = content[0].size();
     }
 
+    /* Tensor class constructor overloaded */
     tensor(const vector<vector<double>> &v)
-    { /* Tensor class constructor
-                                               * overloaded */
+    { 
         vector<double> rows;
 
         unsigned int m_rows = v.size();
@@ -143,6 +145,13 @@ public:
      * @return Tensor status (SUCCESS or FAILURE)
     */
     tensor_status swap_rows(int row_a, int row_b);
+
+    /**
+     * @brief Rotate a quaternion
+     * @param angle The angle of rotation in radians
+     * @return Tensor status (SUCCESS or FAILURE)
+    */
+    tensor_status rotate_quaternion(double angle);
 
     /**
      * @brief print the tensor
@@ -215,4 +224,15 @@ tensor eye(unsigned int m, unsigned int n);
 */
 double norm(const tensor &a);
 double norm(const tensor &a, const double p);
+
+/**
+ * @brief Create a Direction Cosine Matrix (DCM)
+ * @param dcm A tensor that will be converted to a dcm (all elements ovewritten)
+ * @param psi Yaw rotation angle value in radians
+ * @param theta Pitch rotation angle value in radians
+ * @param phi Roll rotation angle value in radians
+ * @return Tensor status (SUCCESS or FAILURE)
+*/
+tensor_status create_dcm(tensor &dcm, double psi, double theta, double phi);
+
 #endif /* TENSOR_H */
