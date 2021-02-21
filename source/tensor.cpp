@@ -374,7 +374,7 @@ tensor_status tensor::rotate_quaternion(double angle)
     return status;
 }
 
-tensor_status create_dcm(tensor &dcm, double psi, double theta, double phi)
+tensor_status create_dcm(double psi, double theta, double phi, tensor &dcm)
 {
     if ((dcm.m_height != DIM) || (dcm.n_width != DIM))
     {
@@ -553,7 +553,7 @@ int main(void)
         dcm.print();
         a.print();
 
-        create_dcm(dcm, 30.0*M_PI/180.0, 0.0, 0.0);
+        create_dcm(30.0*M_PI/180.0, 0.0, 0.0, dcm);
         dcm.print();
 
         tensor b = multiply(dcm, a);

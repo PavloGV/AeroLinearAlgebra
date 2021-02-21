@@ -92,7 +92,7 @@ public:
 
     /* Tensor class constructor overloaded */
     tensor(const vector<vector<double>> &v)
-    { 
+    {
         vector<double> rows;
 
         unsigned int m_rows = v.size();
@@ -226,13 +226,20 @@ double norm(const tensor &a);
 double norm(const tensor &a, const double p);
 
 /**
- * @brief Create a Direction Cosine Matrix (DCM)
- * @param dcm A tensor that will be converted to a dcm (all elements ovewritten)
+ * @brief Create a Direction Cosine Matrix (DCM) in (yaw,pitch,roll) -> (ZXY) 
+ * format
  * @param psi Yaw rotation angle value in radians
  * @param theta Pitch rotation angle value in radians
  * @param phi Roll rotation angle value in radians
+ * @param dcm A tensor that will be converted to a dcm (all elements ovewritten)
  * @return Tensor status (SUCCESS or FAILURE)
 */
-tensor_status create_dcm(tensor &dcm, double psi, double theta, double phi);
+tensor_status create_dcm(double psi, double theta, double phi, tensor &dcm);
 
+/**
+ * @brief Convert Euler angle to a quaternion
+*/
+tensor_status euler_to_quaternion(double psi, double theta, double phi,
+                                  tensor &q);
+// tensor_status quaternion_to_dcm();
 #endif /* TENSOR_H */
