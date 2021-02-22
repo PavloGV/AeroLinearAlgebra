@@ -411,9 +411,46 @@ void tensor::print(void)
 }
 
 /******************************************************************************
+ * Conversion Functions for Plotting with GNU with .dat files
+ *****************************************************************************/
+tensor_status tensor_to_gnuplot_dot(tensor &a, string &d)
+{
+    d.clear();
+    if ((a.m_height != DIM) && (a.n_width != DIM))
+    {
+        return tensor_status::FAILURE;
+    }
+    else if ((a.m_height == DIM) && (a.n_width == 1))
+    {
+        for (uint8_t i = 0; i < DIM; i++)
+        {
+            d += to_string(a.content[i][0]);
+            d += " ";
+        }
+        d += "\r\n";
+    }
+    else if ((a.m_height == 1) && (a.n_width == DIM))
+    {
+        for (uint8_t i = 0; i < DIM; i++)
+        {
+            d += to_string(a.content[0][i]);
+            d += " ";
+        }
+        d += "\r\n";
+    }
+    else
+    {
+        return tensor_status::FAILURE;
+    }
+    return tensor_status::SUCCESS;
+}
+
+/******************************************************************************
  * UNIT TESTS
  *****************************************************************************/
 #ifdef TESTING_TENSOR
+
+#include <fstream>
 
 int main(void)
 {
@@ -543,17 +580,66 @@ int main(void)
         cout << "p-norm(a) = " << norm(a, p) << "\r\n";
     }
 #endif
+#ifdef TEST_TENSOR_TO_GNUPLOT_DOT
+    {
+        cout << "TEST_TENSOR_TO_GNUPLOT_DOT\r\n";
+
+        tensor a(vector<vector<double>>{{1.0}, {2.0}, {3.0}});
+        tensor b(vector<vector<double>>{{2.0, 4.0, 6.0}});
+        tensor c(vector<vector<double>>{{2.0, 3.0, 5.5}});
+        tensor d(3, 3);
+
+        cout << "Generating .dat file\r\n";
+
+        const char *path = "../../simulation/dots.dat";
+        ofstream rot_vec_f(path);
+        string dot;
+        tensor_status status = tensor_status::FAILURE;
+
+        if (rot_vec_f.is_open())
+        {
+            a.print();
+            status = tensor_to_gnuplot_dot(a, dot);
+            cout << "status = " << (int)status << "\r\n";
+            cout << dot << "\r\n";
+            rot_vec_f << dot;
+
+            b.print();
+            status = tensor_to_gnuplot_dot(b, dot);
+            cout << "status = " << (int)status << "\r\n";
+            cout << dot << "\r\n";
+            rot_vec_f << dot;
+
+            c.print();
+            status = tensor_to_gnuplot_dot(c, dot);
+            cout << "status = " << (int)status << "\r\n";
+            cout << dot << "\r\n";
+            rot_vec_f << dot;
+
+            d.print();
+            status = tensor_to_gnuplot_dot(d, dot);
+            cout << "status = " << (int)status << "\r\n";
+            cout << dot << "\r\n";
+            rot_vec_f << dot;
+            rot_vec_f.close();
+        }
+        else
+        {
+            cout << "Unable to open file\r\n";
+        }
+    }
+#endif
 #ifdef TEST_TENSOR_DCM
     {
         cout << "TEST_TENSOR_DCM\r\n";
 
-        tensor dcm(3,3);
+        tensor dcm(3, 3);
         tensor a(vector<vector<double>>{{1.0}, {0.0}, {0.0}});
 
         dcm.print();
         a.print();
 
-        create_dcm(30.0*M_PI/180.0, 0.0, 0.0, dcm);
+        create_dcm(30.0 * M_PI / 180.0, 0.0, 0.0, dcm);
         dcm.print();
 
         tensor b = multiply(dcm, a);

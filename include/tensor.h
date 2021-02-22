@@ -16,8 +16,14 @@
 #include <vector>
 #include <stdint.h>
 #include <iostream>
+#include <string.h>
 #include "config.h"
+
 using namespace std;
+/******************************************************************************
+ * DEFINES
+ *****************************************************************************/
+#define SPLOT_VEC_SIZE 6
 
 /******************************************************************************
  * GLOBAL VARIABLES AND DATATYPES
@@ -225,6 +231,7 @@ tensor eye(unsigned int m, unsigned int n);
 double norm(const tensor &a);
 double norm(const tensor &a, const double p);
 
+
 /**
  * @brief Create a Direction Cosine Matrix (DCM) in (yaw,pitch,roll) -> (ZXY) 
  * format
@@ -242,4 +249,22 @@ tensor_status create_dcm(double psi, double theta, double phi, tensor &dcm);
 tensor_status euler_to_quaternion(double psi, double theta, double phi,
                                   tensor &q);
 // tensor_status quaternion_to_dcm();
+
+/******************************************************************************
+ * Conversion Functions for Plotting with GNU with .dat files
+ *****************************************************************************/
+/**
+ * @brief Convert a tensor of rank 1 to .dat format dot for gnuplot
+ * @param a A tensor, either [3x1] or [1x3]
+ * @param 
+*/
+tensor_status tensor_to_gnuplot_dot(tensor &a, string &d);
+
+/**
+ * @brief Convert a tensor of rank 1 to .dat format vector for gnuplot
+ * @param a A tensor, either [3x1] or [1x3]
+ * @param 
+*/
+tensor_status tensor_to_gnuplot_vec(tensor &a, string &v);
+
 #endif /* TENSOR_H */

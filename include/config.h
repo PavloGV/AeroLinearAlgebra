@@ -17,6 +17,7 @@
 #define TEST_TENSOR_EYE
 #define TEST_TENSOR_INVERT
 #define TEST_TENSOR_NORM
+#define TEST_TENSOR_TO_GNUPLOT_DOT
 #define TEST_TENSOR_DCM
 
 #endif
@@ -32,5 +33,12 @@
 #ifdef TESTING_QUATERNIONS
 
 #define TEST_QUARTERNION_PRINT
+
+#endif
+
+// #define TESTING_PLOT_GEN
+#ifdef TESTING_PLOT_GEN
+
+#define TEST_GEN_DAT
 
 #endif
