@@ -195,6 +195,13 @@ tensor transpose(const tensor &a);
 tensor_status invert(const tensor &a, tensor &a_inv);
 
 /**
+ * @brief Retruns determinant of 3 dimensional tensor
+ * @param a Tensor whose determinant is to be calculated
+ * @return Determinant as a double
+*/
+double det(const tensor &a);
+
+/**
  * @brief Performs gaussian elimination to row reduce tensor to upper
  * triangular form.
 */

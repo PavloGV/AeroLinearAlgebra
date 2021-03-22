@@ -235,6 +235,18 @@ tensor_status invert(const tensor &a, tensor &a_inv)
     return status;
 }
 
+double det(const tensor &a){
+    double det, sub1, sub2, sub3 = 0;
+
+    sub1 = (a.content[1][1]*a.content[2][2]) - (a.content[1][2]*a.content[2][1]);
+    sub2 = (a.content[1][0]*a.content[2][2]) - (a.content[1][2]*a.content[2][0]);
+    sub3 = (a.content[1][0]*a.content[2][1]) - (a.content[1][1]*a.content[2][0]);
+
+    det = (a.content[0][0] * sub1) - (a.content[0][1] * sub2) + (a.content[0][2] * sub3);
+
+    return det;
+}
+
 tensor augment_width(const tensor &a, const tensor &b)
 {
     tensor c(a.m_height, a.n_width + b.n_width);
@@ -554,7 +566,7 @@ int main(void)
 #ifdef TEST_TENSOR_INVERT
     {
         cout << "TEST_TENSOR_INVERT\r\n";
-        tensor a(vector<vector<double>>{{1.0, 2.0, 3.0}, {0.0, 1.0, 4.0}, {5.0, 6.0, 1.0}});
+        tensor a(vector<vector<double>>{{1.0, 2.0, 3.0}, {2.0, 2.0, 7.0}, {5.0, 2.0, 1.0}});
         a.print();
 
         tensor a_inv(a.m_height, a.n_width);
@@ -564,6 +576,14 @@ int main(void)
 
         a_inv.print();
     }
+#endif
+#ifdef TEST_TENSOR_DET
+    cout << "TEST_TENSOR_DET\r\n";
+    tensor a(vector<vector<double>>{{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}, {3.0, 2.0, 1.0}});
+    a.print();
+
+    cout << "det(a) = " << det(a) << "\r\n";
+
 #endif
 #ifdef TEST_TENSOR_NORM
     {
