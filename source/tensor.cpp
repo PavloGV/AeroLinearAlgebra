@@ -82,6 +82,26 @@ tensor multiply(const tensor &a, const tensor &b)
     return c;
 }
 
+tensor add(const tensor &a, const tensor &b) {
+    
+    tensor c(a.m_height, a.n_width);
+
+    /* Check tensor dimensions */
+    if ((a.n_width == b.n_width) && (a.m_height == b.m_height))
+    {
+        /* Iterate through rows in tensor c */
+        for (unsigned int i = 0; i < a.m_height; i++)
+        {
+            /* Iterate through columns in tensor b */
+            for (unsigned int j = 0; j < a.n_width; j++)
+            {
+                c.content[i][j] = a.content[i][j] + b.content[i][j];
+            }
+        }
+    }
+    return c;
+}
+
 tensor copy(const tensor &a)
 {
     tensor b(a.m_height, a.n_width);
@@ -485,6 +505,23 @@ int main(void)
         b.print();
 
         tensor c = multiply(a, b);
+
+        c.print();
+    }
+#endif
+#ifdef TEST_TENSOR_ADD
+    {
+        cout << "TEST_TENSOR_ADD\r\n";
+        tensor a(vector<vector<double>>{{1, 2, 0}, {2, 1, 0}});
+        tensor b(vector<vector<double>>{{1, -2, 0}, {2, 1, 2}});
+
+        cout << "first operand tensor:\r\n";
+        a.print();
+
+        cout << "second operand tensor:\r\n";
+        b.print();
+
+        tensor c = add(a, b);
 
         c.print();
     }
