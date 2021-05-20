@@ -5,8 +5,9 @@
     accelerator
 .. moduleauthor:: Pavlo Vlastos <pvlastos@ucsc.edu>
 """
-from .models import Dynamics as DY
-from .containers import State as ST
+
+from ..Models import Dynamics as DY
+from ..Containers import State as ST
 
 class Projectile():
 	def __init__(self):

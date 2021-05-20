@@ -7,8 +7,8 @@
 """
 
 import numpy as np
-from ..constants import Constants as CN
-from ..containers import State as ST
+from ..Constants import Constants as CN
+from ..Containers import State as ST
 
 class Model():
     def __init__(self):

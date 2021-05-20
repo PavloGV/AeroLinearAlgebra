@@ -1,9 +1,15 @@
 """
 .. module:: Constants.py
 	:platform: MacOS, Unix, Windows,
-	:synopsis: Projectile constants
+	:synopsis: Constants
 .. moduleauthor:: Pavlo Vlastos <pvlastos@ucsc.edu>
 """
+
+###############################################################################
+# Accelerator Constants
+
+###############################################################################
+# Planet Constants
 
 ###############################################################################
 # Projectile Constants
@@ -19,4 +25,4 @@ z0 = 3815.106  # z-coordinate in km
 stateSize = 18
 
 ###############################################################################
-# 
+# Planet

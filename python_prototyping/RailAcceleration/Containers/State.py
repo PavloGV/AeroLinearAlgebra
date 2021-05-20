@@ -8,7 +8,7 @@
 """
 
 import numpy as np
-from ..constants import Constants
+from ..Constants import Constants
 
 class State():
     def __init__(self, x0=Constants.x0, y0=Constants.y0, z0=Constants.z0):

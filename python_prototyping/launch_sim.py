@@ -6,16 +6,18 @@
 .. moduleauthor:: Pavlo Vlastos <pvlastos@ucsc.edu>
 """
 
-# from .accelerator import Accelerator as AR
-import projectile.Projectile as PR
 
+# from .accelerator import Accelerator as AR
+import RailAcceleration.Projectile.Projectile as PR
 
 # print("Building accelerator (Amy)...")
 # Amy = AR.Accelerator()
 # print("Finished building accelerator (Amy)")
 
-print("Building projectile...")
+
+
+print("Building {} object".format(PR.Projectile.__name__))
 Jack = PR.Projectile()
-print("Finished building projectile (Jack)")
+print("Finished building {} object".format(PR.Projectile.__name__))
 
 # Main Loop
