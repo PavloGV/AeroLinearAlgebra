@@ -8,10 +8,11 @@
 """
 
 import numpy as np
-from ..Constants import Constants
+from ..Constants import Constants as CN
 
 class State():
-    def __init__(self, x0=Constants.x0, y0=Constants.y0, z0=Constants.z0):
+    def __init__(self, x0=CN.x0, y0=CN.y0, z0=CN.z0, 
+                 mass0=CN.massProjectile):
         """
         Initialize projectile state
         """
@@ -34,31 +35,38 @@ class State():
         self.dp = 0.0       # angular acceleration x-axis in rad/s^2
         self.dq = 0.0       # angular acceleration y-axis in rad/s^2
         self.dr = 0.0       # angular acceleration z-axis in rad/s^2
+        self.mass = mass0
 
     def setState(self, stateVector):
         """
-        :param stateVector: An 18x1 np.array([[]]) vector
+        :param stateVector: An 19x1 np.array([[]]) vector
         :return: None
         """
         
         # Linear
-        self.x = self.stateVector[0][0] 
-        self.y = self.stateVector[1][0] 
-        self.z = self.stateVector[2][0] 
-        self.dx = self.stateVector[3][0] 
-        self.dy = self.stateVector[4][0] 
-        self.dz = self.stateVector[5][0] 
-        self.ddx = self.stateVector[6][0] 
-        self.ddy = self.stateVector[7][0] 
-        self.ddz = self.stateVector[8][0] 
+        self.x = stateVector[0][0] 
+        self.y = stateVector[1][0] 
+        self.z = stateVector[2][0] 
+
+        self.dx = stateVector[3][0] 
+        self.dy = stateVector[4][0] 
+        self.dz = stateVector[5][0] 
+
+        self.ddx = stateVector[6][0] 
+        self.ddy = stateVector[7][0] 
+        self.ddz = stateVector[8][0] 
         
         # Angular
-        self.roll  = self.stateVector[9][0] 
-        self.pitch = self.stateVector[10][0]
-        self.yaw = self.stateVector[11][0]
-        self.p = self.stateVector[12][0]
-        self.q = self.stateVector[13][0]
-        self.r = self.stateVector[14][0]
-        self.dp = self.stateVector[15][0]
-        self.dq = self.stateVector[16][0]
-        self.dr = self.stateVector[17][0]
+        self.roll  = stateVector[9][0] 
+        self.pitch = stateVector[10][0]
+        self.yaw = stateVector[11][0]
+
+        self.p = stateVector[12][0]
+        self.q = stateVector[13][0]
+        self.r = stateVector[14][0]
+
+        self.dp = stateVector[15][0]
+        self.dq = stateVector[16][0]
+        self.dr = stateVector[17][0]
+        
+        self.mass = stateVector[18][0]
