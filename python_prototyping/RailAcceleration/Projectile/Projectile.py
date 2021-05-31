@@ -15,5 +15,5 @@ class Projectile():
 		Initialize projectile object
 		"""
 		self.state = ST.State()
-		self.model = DY.Model()
+		self.model = DY.Model(self.state)
 

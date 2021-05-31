@@ -44,29 +44,39 @@ class State():
         """
         
         # Linear
-        self.x = stateVector[0][0] 
-        self.y = stateVector[1][0] 
-        self.z = stateVector[2][0] 
+        self.x = stateVector[0] 
+        self.y = stateVector[1] 
+        self.z = stateVector[2] 
 
-        self.dx = stateVector[3][0] 
-        self.dy = stateVector[4][0] 
-        self.dz = stateVector[5][0] 
+        self.dx = stateVector[3] 
+        self.dy = stateVector[4] 
+        self.dz = stateVector[5] 
 
-        self.ddx = stateVector[6][0] 
-        self.ddy = stateVector[7][0] 
-        self.ddz = stateVector[8][0] 
+        self.ddx = stateVector[6] 
+        self.ddy = stateVector[7] 
+        self.ddz = stateVector[8] 
         
         # Angular
-        self.roll  = stateVector[9][0] 
-        self.pitch = stateVector[10][0]
-        self.yaw = stateVector[11][0]
+        self.roll  = stateVector[9] 
+        self.pitch = stateVector[10]
+        self.yaw = stateVector[11]
 
-        self.p = stateVector[12][0]
-        self.q = stateVector[13][0]
-        self.r = stateVector[14][0]
+        self.p = stateVector[12]
+        self.q = stateVector[13]
+        self.r = stateVector[14]
 
-        self.dp = stateVector[15][0]
-        self.dq = stateVector[16][0]
-        self.dr = stateVector[17][0]
+        self.dp = stateVector[15]
+        self.dq = stateVector[16]
+        self.dr = stateVector[17]
         
-        self.mass = stateVector[18][0]
+        self.mass = stateVector[18]
+
+    def setOrientation(self, phi, theta, psi):
+        """
+        :param phi: Roll ange in radians
+        :param theta: Pitch ange in radians
+        :param psi: Yaw ange in radians
+        """
+        self.roll = phi
+        self.pitch = theta
+        self.yaw = psi

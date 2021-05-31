@@ -11,14 +11,15 @@ from ..Constants import Constants as CN
 from ..Containers import State as ST
 
 class Model():
-    def __init__(self):
+    def __init__(self, state=ST.State):
         """
         Initialize the model with constants for the appropriate model 
         parameters. Using discrete state space notation
         """
 
         # State vector to carry around
-        self.X = np.zeros((CN.stateSize, 1))
+        self.X = np.zeros(CN.stateSize)
+        self.setX()
 
         # Discrete dynamics matrix (state transition matrix) 
         dt1 = CN.dt
@@ -45,15 +46,15 @@ class Model():
             [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]])
 
         # Discrete input matrix
-        self.Gamma = np.array([[0.0, 0.0, 0.0],
-                                [0.0, 0.0, 0.0],
-                                [0.0, 0.0, 0.0],
-                                [0.0, 0.0, 0.0],
-                                [0.0, 0.0, 0.0],
-                                [0.0, 0.0, 0.0],
-                                [dt2/CN.massProjectile, 0.0, 0.0],
+        self.Gamma = np.array([[dt2/CN.massProjectile, 0.0, 0.0],
                                 [0.0, dt2/CN.massProjectile, 0.0],
                                 [0.0, 0.0, dt2/CN.massProjectile],
+                                [dt1/CN.massProjectile, 0.0, 0.0],
+                                [0.0, dt1/CN.massProjectile, 0.0],
+                                [0.0, 0.0, dt1/CN.massProjectile],
+                                [1.0/CN.massProjectile, 0.0, 0.0],
+                                [0.0, 1.0/CN.massProjectile, 0.0],
+                                [0.0, 0.0, 1.0/CN.massProjectile],
                                 [0.0, 0.0, 0.0],
                                 [0.0, 0.0, 0.0],
                                 [0.0, 0.0, 0.0],
@@ -71,37 +72,44 @@ class Model():
         # Measurement vector
         self.Y = np.matmul(self.H, self.X)
 
-    def update(self, Fx, Fy, Fz, state=ST.State()):
+    def update(self, t, X):
         """
-        :param Fx: The net force acting upon the projectile in the body x-axis
-        :param Fy: The net force acting upon the projectile in the body y-axis
-        :param Fz: The net force acting upon the projectile in the body z-axis
-        :param state: A projectile state vector
-        :return: state The state object representing the projectile's state
+        :param t: a time scalar value
+        :param F: The net force acting upon the projectile
+        :param X: A projectile state vector and the force vector concatenated 
+        together
+        :return: A projectile state vector and the force vector concatenated 
+        together
         """
 
-        # input
-        u = np.array([[Fx],
-                      [Fy],
-                      [Fz]])
+        # print('X={}'.format(X))
+        # print('X.shape={}'.format(X.shape))
 
         # Set the state vector
-        self.setX(state)
+        self.X = X[0:19]
+        
+        # Input
+        u = X[19:]
 
-        # print(self.X.shape)
-        # print(self.Phi.shape)
-        # print(self.Gamma.shape)
+        # print('u.shape={}'.format(u.shape))
+        # print('self.X.shape={}'.format(self.X.shape))
+        # print('self.Phi.shape={}'.format(self.Phi.shape))
+        # print('self.Gamma.shape={}'.format(self.Gamma.shape))
 
         # Apply the famous state space formulation
-        self.X = np.matmul(self.Phi, self.X) + np.matmul(self.Gamma, u)
+        self.X = (self.Phi @ self.X) + (self.Gamma @ u)
 
-        state.setState(self.X)
+        # state = ST.State
+        # state.setState(self.X)
 
         # Update Measurement vector
         # TODO: Limit the observation matrix so that some states are hidden
-        self.Y = np.matmul(self.H, self.X)
+        self.Y = self.H @ self.X
 
-        return state
+        Yi = np.concatenate((self.X, u))
+        # print('Yi={}'.format(Yi))
+
+        return Yi
         
     def setX(self, state=ST.State()):
         """
@@ -111,30 +119,32 @@ class Model():
         """
 
         # Linear
-        self.X[0][0] = state.x
-        self.X[1][0] = state.y
-        self.X[2][0] = state.z
-        self.X[3][0] = state.dx
-        self.X[4][0] = state.dy
-        self.X[5][0] = state.dz
-        self.X[6][0] = state.ddx
-        self.X[7][0] = state.ddy
-        self.X[8][0] = state.ddz
+        self.X[0] = state.x
+        self.X[1] = state.y
+        self.X[2] = state.z
+        self.X[3] = state.dx
+        self.X[4] = state.dy
+        self.X[5] = state.dz
+        self.X[6] = state.ddx
+        self.X[7] = state.ddy
+        self.X[8] = state.ddz
         
         # Angular
-        self.X[9][0] = state.roll
-        self.X[10][0] = state.pitch
-        self.X[11][0] = state.yaw
-        self.X[12][0] = state.p
-        self.X[13][0] = state.q
-        self.X[14][0] = state.r
-        self.X[15][0] = state.dp
-        self.X[16][0] = state.dq
-        self.X[17][0] = state.dr
+        self.X[9] = state.roll
+        self.X[10] = state.pitch
+        self.X[11] = state.yaw
+        self.X[12] = state.p
+        self.X[13] = state.q
+        self.X[14] = state.r
+        self.X[15] = state.dp
+        self.X[16] = state.dq
+        self.X[17] = state.dr
 
         # Propellant
-        self.X[18][0] = state.mass
+        self.X[18] = state.mass
         
+    def getX(self):
+        return self.X
 
 
 
