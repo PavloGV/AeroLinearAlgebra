@@ -26,20 +26,20 @@ class State():
         self.ddx = 0.0      # acceleration x in meters per second^2
         self.ddy = 0.0      # acceleration y in meters per second^2
         self.ddz = 0.0      # acceleration z in meters per second^2
-        self.roll = 0.0     # roll angle in radians
-        self.pitch = 0.0    # pitch angle in radians
-        self.yaw = 0.0      # yaw angle in radians
-        self.p = 0.0        # angular velocity about x-axis in rad/s
-        self.q = 0.0        # angular velocity about y-axis in rad/s
-        self.r = 0.0        # angular velocity about z-axis in rad/s
-        self.dp = 0.0       # angular acceleration x-axis in rad/s^2
-        self.dq = 0.0       # angular acceleration y-axis in rad/s^2
-        self.dr = 0.0       # angular acceleration z-axis in rad/s^2
+        # self.roll = 0.0     # roll angle in radians
+        # self.pitch = 0.0    # pitch angle in radians
+        # self.yaw = 0.0      # yaw angle in radians
+        # self.p = 0.0        # angular velocity about x-axis in rad/s
+        # self.q = 0.0        # angular velocity about y-axis in rad/s
+        # self.r = 0.0        # angular velocity about z-axis in rad/s
+        # self.dp = 0.0       # angular acceleration x-axis in rad/s^2
+        # self.dq = 0.0       # angular acceleration y-axis in rad/s^2
+        # self.dr = 0.0       # angular acceleration z-axis in rad/s^2
         self.mass = mass0
 
     def setState(self, stateVector):
         """
-        :param stateVector: An 19x1 np.array([[]]) vector
+        :param stateVector: An 10-19x1 np.array([[]]) vector
         :return: None
         """
         
@@ -57,19 +57,21 @@ class State():
         self.ddz = stateVector[8] 
         
         # Angular
-        self.roll  = stateVector[9] 
-        self.pitch = stateVector[10]
-        self.yaw = stateVector[11]
+        # self.roll  = stateVector[9] 
+        # self.pitch = stateVector[10]
+        # self.yaw = stateVector[11]
 
-        self.p = stateVector[12]
-        self.q = stateVector[13]
-        self.r = stateVector[14]
+        # self.p = stateVector[12]
+        # self.q = stateVector[13]
+        # self.r = stateVector[14]
 
-        self.dp = stateVector[15]
-        self.dq = stateVector[16]
-        self.dr = stateVector[17]
+        # self.dp = stateVector[15]
+        # self.dq = stateVector[16]
+        # self.dr = stateVector[17]
         
-        self.mass = stateVector[18]
+        # Propellant
+        # self.mass = stateVector[18]
+        self.mass = stateVector[9]
 
     def setOrientation(self, phi, theta, psi):
         """

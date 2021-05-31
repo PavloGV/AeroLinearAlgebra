@@ -183,24 +183,25 @@ print('Y0.shape={}'.format(Y0.shape))
 X = Jack.model.getX()
 print('X.shape={}'.format(X.shape))
 print('X={}'.format(X))
-Yi = np.concatenate((X, Fsum))
+Yi = Y0
 # print('Yi.shape={}'.format(Yi.shape))
 
-RK = scipy.integrate.RK45(Jack.model.update, CN.t0, Y0, CN.tf)
-print(RK)
+# RK = scipy.integrate.RK45(Jack.model.update, CN.t0, Y0, CN.tf)
+# print(RK)
 ##############################################################################
 # Main Loop
 for k in steps:
 
-    # Jack.state = Jack.model.update(Fsum, Jack.state)
+    Jack.model.update(t[k], Yi)
     # print('X.shape={}'.format(X.shape))
     # print('X.shape={}'.format(X.shape))
     # print('Yi.shape={}'.format(Yi.shape))
     # rk_step(Jack.model.update, t[k], Yi)
 
-    scipy.integrate.RK45(Jack.model.update, t[k], Yi, t[k]+CN.dt)
+    # scipy.integrate.RK45(Jack.model.update, t[k], Yi, t[k]+CN.dt)
 
     X = Jack.model.getX()
+
     Jack.state.setState(X)
 
     r = np.array([[Jack.state.x],
@@ -212,12 +213,12 @@ for k in steps:
     
     rmag = np.linalg.norm(r)
 
-    if rmag < CN.radiusEarth:
-        rmag = np.infty
+    if rmag < 0:
+        rmag = 1
 
     r2 = rmag**2.0
 
-    FgMag = CN.G*CN.massEarth*CN.massProjectile/r2
+    FgMag = -CN.G*CN.massEarth*CN.massProjectile/r2
 
     Fg = FgMag * r/rmag
     Fg = np.reshape(Fg, (len(Fg),))
@@ -233,7 +234,7 @@ for k in steps:
     Fi = np.reshape(Fi, (len(Fi),))
     # print('Fi={}'.format(Fi))
 
-    Fsum = Fi - Fg
+    Fsum = Fi + Fg
     # print('Fsum={}'.format(Fsum))
     # while True:
     #     Fsum += 0
@@ -247,9 +248,10 @@ for k in steps:
         y = np.concatenate((y, np.array([Jack.state.y])), axis=0)
         z = np.concatenate((z, np.array([Jack.state.z])), axis=0)
 
-        print("k = {}, Fgmag = {}, Fimag = {}, x:{}, y:{}, z:{}".format(
-            k,  np.linalg.norm(Fg), np.linalg.norm(Fi), Jack.state.x, 
-            Jack.state.y, Jack.state.z))
+        print("k = {}, Fgmag = {}, Fimag = {}, x:{}, y:{}, z:{}, mass:{}".format(
+            k,  round(np.linalg.norm(Fg)), round(np.linalg.norm(Fi)), 
+            round(Jack.state.x), round(Jack.state.y), round(Jack.state.z),
+            Jack.state.mass))
         
         position.set_data(x, y)
         position.set_3d_properties(z)
@@ -267,7 +269,7 @@ for k in steps:
 
         a = np.array([[Jack.state.x],[Jack.state.y],[Jack.state.z]])
         a -= CN.origin
-        a = a/np.linalg.norm(a) * CN.radiusEarth*(2/3)
+        a = a/np.linalg.norm(a) * CN.radiusEarth
         a += CN.origin
 
         forcex = np.array([Jack.state.x, a[0][0]])

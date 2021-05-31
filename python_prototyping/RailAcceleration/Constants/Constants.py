@@ -39,10 +39,10 @@ tf = 10000.0 		# Stop time of simulation in seconds
 # Projectile Constants
 massProjectile = 1252.0 	# projectile mass in kg
 
-# origin = np.zeros((3,1))
-origin = np.array([[10000],
-                   [10000],
-                   [1]])
+origin = np.zeros((3,1))
+# origin = np.array([[10000],
+#                    [10000],
+#                    [1]])
 
 # Initial Earth-Centered Earth-Fixed (ECEF) coordinates 
 # Santa Cruz, CA, USA
@@ -59,7 +59,7 @@ y0 += origin[1][0]
 z0 += origin[2][0]
 
 # State size
-stateSize = 19
+stateSize = 10#19
 
 ###############################################################################
 # Planet
