@@ -17,3 +17,12 @@ class Projectile():
 		self.state = ST.State()
 		self.model = DY.Model(self.state)
 
+
+	def update(self,t,X,u):
+		#run a step of the dynamic model and update the internal state
+		self.model.update(t,X,u)
+		self.state.setState(self.model.X)
+		
+		return self.model.X
+
+

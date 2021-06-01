@@ -11,6 +11,36 @@ from ..Constants import Constants as CN
 from ..Containers import State as ST
 
 class Model():
+
+    def make_Phi(self,t=0):
+        dt1 = CN.dt
+        dt2 = (CN.dt**2.0)/2.0
+        mass_scalar = 1.0
+        #mass_scalar = f(t)
+
+        self.Phi =  np.array([
+            [1.0, 0.0, 0.0, dt1, 0.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0, dt1, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0, 0.0, dt1, 0.0],
+            [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, mass_scalar]])
+
+    def make_Gamma(self,t=0):
+        dt1 = CN.dt
+        dt2 = (CN.dt**2.0)/2.0
+        M = CN.massProjectile
+        #M = M(t)
+        self.Gamma = np.array([ [dt2/M, 0.0, 0.0],
+                        [0.0, dt2/M, 0.0],
+                        [0.0, 0.0, dt2/M],
+                        [dt1/M, 0.0, 0.0],
+                        [0.0, dt1/M, 0.0],
+                        [0.0, 0.0, dt1/M],
+                        [0.0, 0.0, 0.0]])
+
+
     def __init__(self, state=ST.State):
         """
         Initialize the model with constants for the appropriate model 
@@ -18,12 +48,11 @@ class Model():
         """
 
         # State vector to carry around
-        self.X = np.zeros(CN.stateSize)
+        self.X = np.zeros(state.stateSize)
         self.setX(state)
 
         # Discrete dynamics matrix (state transition matrix) 
-        dt1 = CN.dt
-        dt2 = (CN.dt**2.0)/2.0
+
         # self.Phi = np.array([
         #     [1.0, 0.0, 0.0, dt1, 0.0, 0.0, dt2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         #     [0.0, 1.0, 0.0, 0.0, dt1, 0.0, 0.0, dt2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -44,17 +73,7 @@ class Model():
         #     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
         #     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0],
         #     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]])
-        self.Phi = np.array([
-            [1.0, 0.0, 0.0, dt1, 0.0, 0.0, dt2, 0.0, 0.0, 0.0],
-            [0.0, 1.0, 0.0, 0.0, dt1, 0.0, 0.0, dt2, 0.0, 0.0],
-            [0.0, 0.0, 1.0, 0.0, 0.0, dt1, 0.0, 0.0, dt2, 0.0],
-            [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, dt1, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, dt1, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, dt1, 0.0],
-            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0],
-            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]])
+        self.make_Phi(self) 
 
         # Discrete input matrix
         # self.Gamma = np.array([[dt2/CN.massProjectile, 0.0, 0.0],
@@ -76,61 +95,42 @@ class Model():
         #                         [0.0, 0.0, 0.0],
         #                         [0.0, 0.0, 0.0],
         #                         [0.0, 0.0, 0.0]])
-        self.Gamma = np.array([[dt2/CN.massProjectile, 0.0, 0.0],
-                                [0.0, dt2/CN.massProjectile, 0.0],
-                                [0.0, 0.0, dt2/CN.massProjectile],
-                                [dt1/CN.massProjectile, 0.0, 0.0],
-                                [0.0, dt1/CN.massProjectile, 0.0],
-                                [0.0, 0.0, dt1/CN.massProjectile],
-                                [1.0/CN.massProjectile, 0.0, 0.0],
-                                [0.0, 1.0/CN.massProjectile, 0.0],
-                                [0.0, 0.0, 1.0/CN.massProjectile],
-                                [0.0, 0.0, 0.0]])
+        self.make_Gamma(self) 
 
         # Discrete observation matrix
-        self.H = np.eye(CN.stateSize)
+        self.H = np.eye(state.stateSize)
 
         # Measurement vector
         self.Y = np.matmul(self.H, self.X)
 
-    def update(self, t, X):
+    def update(self, t, X, u):
         """
-        :param t: a time scalar value
-        :param F: The net force acting upon the projectile
-        :param X: A projectile state vector and the force vector concatenated 
-        together
-        :return: A projectile state vector and the force vector concatenated 
-        together
+        @param t: a time scalar value
+        @param X: A projectile state vector
+        @param U: The net force acting upon the projectile
+        @return: A projectile state vector
         """
 
         # print('X={}'.format(X))
         # print('X.shape={}'.format(X.shape))
 
-        # Set the state vector
-        self.X = X[0:CN.stateSize]
-        
-        # Input
-        u = X[CN.stateSize:]
-
         # print('u.shape={}'.format(u.shape))
         # print('self.X.shape={}'.format(self.X.shape))
+
         # print('self.Phi.shape={}'.format(self.Phi.shape))
         # print('self.Gamma.shape={}'.format(self.Gamma.shape))
 
         # Apply the famous state space formulation
-        self.X = (self.Phi @ self.X) + (self.Gamma @ u)
-
-        # state = ST.State
-        # state.setState(self.X)
+        
+        self.X = (self.Phi @ X) + (self.Gamma @ u)
+        #TODO: self.X = (self.make_Phi(t) @ X) + (self.make_Gamma(t) @ u)
 
         # Update Measurement vector
         # TODO: Limit the observation matrix so that some states are hidden
         self.Y = self.H @ self.X
 
-        Yi = np.concatenate((self.X, u))
-        # print('Yi={}'.format(Yi))
-
-        return Yi
+        #return updated state
+        return self.X
         
     def setX(self, state=ST.State()):
         """
@@ -146,10 +146,8 @@ class Model():
         self.X[3] = state.dx
         self.X[4] = state.dy
         self.X[5] = state.dz
-        self.X[6] = state.ddx
-        self.X[7] = state.ddy
-        self.X[8] = state.ddz
-        
+        self.X[6] = state.mass
+
         # # Angular
         # self.X[9] = state.roll
         # self.X[10] = state.pitch
@@ -164,7 +162,6 @@ class Model():
         # # Propellant
         # self.X[18] = state.mass
 
-        self.X[9] = state.mass
         
     def getX(self):
         return self.X

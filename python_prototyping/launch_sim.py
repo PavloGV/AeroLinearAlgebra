@@ -12,7 +12,7 @@ import RailAcceleration.Projectile.Projectile as PR
 import RailAcceleration.Constants.Constants as CN
 import RailAcceleration.Utilities.Rotations as ROT
 import numpy as np
-import scipy
+#import scipy
 from scipy import integrate
 
 import matplotlib
@@ -41,12 +41,16 @@ parser.add_argument('-s', '--staticGraphing', dest='staticGraphing',
                     action='store_true', help='Graph the simulation after it \
                         runs the main loop')
 
+parser.add_argument('-v', '--verbose', dest='verbose', 
+                    action='store_true', help='Display state at every iteration', default = False)
+
 arguments = parser.parse_args()
 
 dynamicGraphing = arguments.dynamicGraphing
 initforce = arguments.initforce
 graphInterval = arguments.interval
 staticGraphing = arguments.staticGraphing
+verbose = arguments.verbose
 
 
 
@@ -174,39 +178,28 @@ background0 = fig.canvas.copy_from_bbox(ax0.bbox)
 t = np.arange(CN.t0, CN.tf, CN.dt)
 maxStepNum = len(t)
 steps = range(0, maxStepNum)
-Fsum = np.zeros(3)
 
-print('Jack.model.X=\r\n{}'.format(Jack.model.X.T))
-print('Jack.model.Xshape=\r\n{}'.format(Jack.model.X.T.shape))
-Y0 = np.concatenate((Jack.model.X, Fsum))
-print('Y0.shape={}'.format(Y0.shape))
-X = Jack.model.getX()
-print('X.shape={}'.format(X.shape))
-print('X={}'.format(X))
-Yi = Y0
-# print('Yi.shape={}'.format(Yi.shape))
+
 
 # RK = scipy.integrate.RK45(Jack.model.update, CN.t0, Y0, CN.tf)
 # print(RK)
-##############################################################################
+
+#initial conditions
+print('Jack.model.X=\r\n{}'.format(Jack.model.X.T))
+print('Jack.model.Xshape=\r\n{}'.format(Jack.model.X.T.shape))
+X = Jack.model.getX()
+u = np.zeros(3)
+
 # Main Loop
 for k in steps:
 
-    Jack.model.update(t[k], Yi)
+    X = Jack.update(t[k], X, u)
     # print('X.shape={}'.format(X.shape))
-    # print('X.shape={}'.format(X.shape))
-    # print('Yi.shape={}'.format(Yi.shape))
     # rk_step(Jack.model.update, t[k], Yi)
 
     # scipy.integrate.RK45(Jack.model.update, t[k], Yi, t[k]+CN.dt)
 
-    X = Jack.model.getX()
-
-    Jack.state.setState(X)
-
-    r = np.array([[Jack.state.x],
-                    [Jack.state.y],
-                    [Jack.state.z]])
+    r = Jack.state.getPosVector()
     # print('r.shape={}'.format(r.shape))
     # print('r={}'.format(r))
     r -= CN.origin
@@ -214,11 +207,11 @@ for k in steps:
     rmag = np.linalg.norm(r)
 
     if rmag < 0:
+        print('negative position vector?!')
         rmag = 1
-
+        
     r2 = rmag**2.0
-
-    FgMag = -CN.G*CN.massEarth*CN.massProjectile/r2
+    FgMag = -CN.G*CN.massEarth*Jack.state.mass/r2
 
     Fg = FgMag * r/rmag
     Fg = np.reshape(Fg, (len(Fg),))
@@ -234,12 +227,10 @@ for k in steps:
     Fi = np.reshape(Fi, (len(Fi),))
     # print('Fi={}'.format(Fi))
 
-    Fsum = Fi + Fg
+    u = Fi + Fg
     # print('Fsum={}'.format(Fsum))
     # while True:
     #     Fsum += 0
-
-    Yi = np.concatenate((X, Fsum))
 
     # Graphing Update
     if (np.mod(k, graphInterval) == 0) and dynamicGraphing:
@@ -247,11 +238,11 @@ for k in steps:
         x = np.concatenate((x, np.array([Jack.state.x])), axis=0) 
         y = np.concatenate((y, np.array([Jack.state.y])), axis=0)
         z = np.concatenate((z, np.array([Jack.state.z])), axis=0)
-
-        print("k = {}, Fgmag = {}, Fimag = {}, x:{}, y:{}, z:{}, mass:{}".format(
-            k,  round(np.linalg.norm(Fg)), round(np.linalg.norm(Fi)), 
-            round(Jack.state.x), round(Jack.state.y), round(Jack.state.z),
-            Jack.state.mass))
+        if verbose:
+            print("k = {}, Fgmag = {}, Fimag = {}, x:{}, y:{}, z:{}, mass:{}".format(
+                k,  round(np.linalg.norm(Fg)), round(np.linalg.norm(Fi)), 
+                round(Jack.state.x), round(Jack.state.y), round(Jack.state.z),
+                Jack.state.mass))
         
         position.set_data(x, y)
         position.set_3d_properties(z)
