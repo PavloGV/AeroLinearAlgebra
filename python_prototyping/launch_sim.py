@@ -48,8 +48,6 @@ initforce = arguments.initforce
 graphInterval = arguments.interval
 staticGraphing = arguments.staticGraphing
 
-
-
 ##############################################################################
 # print("Building accelerator (Amy)...")
 # Amy = AR.Accelerator()
@@ -102,30 +100,30 @@ R = ROT.dcmFromEuler(-np.pi/2.0, 0.0, 0.0)
 
 point = np.matmul(R, r) 
 
-v = np.array([[1], 
-              [0], 
-              [0]])
+# v = np.array([[1], 
+#               [0], 
+#               [0]])
 
-# v = point/np.linalg.norm(point)
+# # v = point/np.linalg.norm(point)
 
-u = r/np.linalg.norm(r)
+# u = r/np.linalg.norm(r)
 
-print('u.shape={}'.format(u.shape))
-print('v.shape={}'.format(v.shape))
-print('point={}'.format(point))
+# print('u.shape={}'.format(u.shape))
+# print('v.shape={}'.format(v.shape))
+# print('point={}'.format(point))
 
-w = np.cross(u.T, v.T)
+# w = np.cross(u.T, v.T)
 
-angle = ROT.rotationAngleFrom2vectors(u, v)
-print('angle.shape={}'.format(angle.shape))
+# angle = ROT.rotationAngleFrom2vectors(u, v)
+# print('angle.shape={}'.format(angle.shape))
 
-print('w.shape={}'.format(w.shape))
-print('angle={}'.format(angle))
-R = ROT.dcmFromAngleAndVector(angle, w.T)
+# print('w.shape={}'.format(w.shape))
+# print('angle={}'.format(angle))
+# R = ROT.dcmFromAngleAndVector(angle, w.T)
 
-phi, theta, psi = ROT.EulerAnglesFromDCM(R)
+# phi, theta, psi = ROT.EulerAnglesFromDCM(R)
 
-Jack.state.setOrientation(phi, theta, psi)
+# Jack.state.setOrientation(phi, theta, psi)
 
 r += CN.origin
 p = point + r
@@ -232,7 +230,8 @@ for k in steps:
     else:
         Fi = np.zeros((3,1))
     Fi = np.reshape(Fi, (len(Fi),))
-    # print('Fi={}'.format(Fi))
+    # print('Fi.shape={}'.format(Fi.shape))
+    # print('Fg.shape={}'.format(Fg.shape))
 
     Fsum = Fi + Fg
     # print('Fsum={}'.format(Fsum))

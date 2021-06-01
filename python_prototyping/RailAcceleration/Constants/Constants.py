@@ -31,7 +31,7 @@ zmax =  radiusEarth*scale
 
 ###############################################################################
 # Timing
-dt = 0.0025	  	# sample time in seconds
+dt = 0.025	  	# sample time in seconds
 t0 = -10.0 		# Start time of simulation in seconds
 tf = 10000.0 		# Stop time of simulation in seconds
 
@@ -59,7 +59,7 @@ y0 += origin[1][0]
 z0 += origin[2][0]
 
 # State size
-stateSize = 10#19
+stateSize = 7#10#19
 
 ###############################################################################
 # Planet

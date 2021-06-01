@@ -23,9 +23,9 @@ class State():
         self.dx = 0.0       # velocity x in meters per second
         self.dy = 0.0       # velocity y in meters per second
         self.dz = 0.0       # velocity z in meters per second
-        self.ddx = 0.0      # acceleration x in meters per second^2
-        self.ddy = 0.0      # acceleration y in meters per second^2
-        self.ddz = 0.0      # acceleration z in meters per second^2
+        # self.ddx = 0.0      # acceleration x in meters per second^2
+        # self.ddy = 0.0      # acceleration y in meters per second^2
+        # self.ddz = 0.0      # acceleration z in meters per second^2
         # self.roll = 0.0     # roll angle in radians
         # self.pitch = 0.0    # pitch angle in radians
         # self.yaw = 0.0      # yaw angle in radians
@@ -52,9 +52,9 @@ class State():
         self.dy = stateVector[4] 
         self.dz = stateVector[5] 
 
-        self.ddx = stateVector[6] 
-        self.ddy = stateVector[7] 
-        self.ddz = stateVector[8] 
+        # self.ddx = stateVector[6] 
+        # self.ddy = stateVector[7] 
+        # self.ddz = stateVector[8] 
         
         # Angular
         # self.roll  = stateVector[9] 
@@ -71,14 +71,14 @@ class State():
         
         # Propellant
         # self.mass = stateVector[18]
-        self.mass = stateVector[9]
+        self.mass = stateVector[6]
 
-    def setOrientation(self, phi, theta, psi):
-        """
-        :param phi: Roll ange in radians
-        :param theta: Pitch ange in radians
-        :param psi: Yaw ange in radians
-        """
-        self.roll = phi
-        self.pitch = theta
-        self.yaw = psi
+    # def setOrientation(self, phi, theta, psi):
+    #     """
+    #     :param phi: Roll ange in radians
+    #     :param theta: Pitch ange in radians
+    #     :param psi: Yaw ange in radians
+    #     """
+    #     self.roll = phi
+    #     self.pitch = theta
+    #     self.yaw = psi
