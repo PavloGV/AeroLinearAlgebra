@@ -4,11 +4,12 @@
  * @brief Configurations for various classes and subsequent tests
  */
 
-#define TESTING_TENSOR
+// #define TESTING_TENSOR
 #ifdef TESTING_TENSOR
 
 #define TEST_TENSOR_CLASS_CONSTRUCTOR
 #define TEST_TENSOR_MULTIPLICATION
+#define TEST_TENSOR_ADD
 #define TEST_TENSOR_COPY
 #define TEST_TENSOR_TRANSPOSE
 #define TEST_TENSOR_SWAP_ROWS
@@ -22,17 +23,11 @@
 
 #endif
 
-// #define TESTING_PARTICLE
+#define TESTING_PARTICLE
 #ifdef TESTING_PARTICLE
 
 #define TEST_PARTICLE_PRINT
-
-#endif
-
-// #define TESTING_QUATERNIONS
-#ifdef TESTING_QUATERNIONS
-
-#define TEST_QUARTERNION_PRINT
+#define TEST_PARTICLE_UPDATE
 
 #endif
 
