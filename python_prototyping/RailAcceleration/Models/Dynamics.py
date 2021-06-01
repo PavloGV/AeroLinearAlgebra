@@ -16,7 +16,7 @@ class Model():
         dt1 = CN.dt
         dt2 = (CN.dt**2.0)/2.0
         mass_scalar = 1.0
-        #mass_scalar = f(t)
+        #mass_scalar = f(t) for some decreasing function
 
         self.Phi =  np.array([
             [1.0, 0.0, 0.0, dt1, 0.0, 0.0, 0.0],

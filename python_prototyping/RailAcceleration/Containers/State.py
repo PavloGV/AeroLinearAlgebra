@@ -83,6 +83,7 @@ class State():
 
    
     def getPosVector(self):
-        return np.array([[self.x],
+        return np.array([
+              [self.x],
               [self.y],
               [self.z]])

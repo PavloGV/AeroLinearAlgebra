@@ -6,21 +6,15 @@
 .. moduleauthor:: Pavlo Vlastos <pvlastos@ucsc.edu>
 """
 
-
 # from .accelerator import Accelerator as AR
 import RailAcceleration.Projectile.Projectile as PR
 import RailAcceleration.Constants.Constants as CN
 import RailAcceleration.Utilities.Rotations as ROT
-import numpy as np
-#import scipy
-from scipy import integrate
 
-import matplotlib
-from matplotlib import cm
+import numpy as np
+import scipy.integrate
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
-from matplotlib.markers import MarkerStyle
-import matplotlib.animation as animation
 
 import argparse
 
@@ -181,35 +175,38 @@ steps = range(0, maxStepNum)
 
 
 
-# RK = scipy.integrate.RK45(Jack.model.update, CN.t0, Y0, CN.tf)
-# print(RK)
+
 
 #initial conditions
 print('Jack.model.X=\r\n{}'.format(Jack.model.X.T))
 print('Jack.model.Xshape=\r\n{}'.format(Jack.model.X.T.shape))
-X = Jack.model.getX()
-u = np.zeros(3)
 
+#framework for possible usage of rk45:
+#X = Jack.model.getX()
+#u = np.zeros(3)
+#y0 = np.concatenate((X,u))
+#integrator = scipy.integrate.RK45(Jack.RK_update, CN.t0, y0, CN.tf)
+#for loop:
+    #integrator.y[-3:] = u
+    #integrator.step()
+    #print(integrator.status)
+    #print(integrator.y[0:3])
+
+##########################################
 # Main Loop
 for k in steps:
 
-    X = Jack.update(t[k], X, u)
-    # print('X.shape={}'.format(X.shape))
-    # rk_step(Jack.model.update, t[k], Yi)
-
-    # scipy.integrate.RK45(Jack.model.update, t[k], Yi, t[k]+CN.dt)
-
-    r = Jack.state.getPosVector()
+    #calculate gravity pulling from position to origin:
+    r = Jack.state.getPosVector() - CN.origin
     # print('r.shape={}'.format(r.shape))
     # print('r={}'.format(r))
     r -= CN.origin
-    
     rmag = np.linalg.norm(r)
 
     if rmag < 0:
         print('negative position vector?!')
         rmag = 1
-        
+
     r2 = rmag**2.0
     FgMag = -CN.G*CN.massEarth*Jack.state.mass/r2
 
@@ -217,20 +214,24 @@ for k in steps:
     Fg = np.reshape(Fg, (len(Fg),))
     # print('Fg={}'.format(Fg))
 
+    #apply an initial force in the first several seconds:
     if t[k] < 10:
         # pmag = np.linalg.norm(p)
         # Fi = 100*(p-r)/pmag
         Fi = point/np.linalg.norm(point)*initforce
-
     else:
         Fi = np.zeros((3,1))
     Fi = np.reshape(Fi, (len(Fi),))
+
     # print('Fi={}'.format(Fi))
 
+    #control input is the sum of gravity and thrust:
     u = Fi + Fg
     # print('Fsum={}'.format(Fsum))
-    # while True:
-    #     Fsum += 0
+
+    #finally, the Ax + Bu call:
+    Jack.update(t[k], Jack.model.X, u)
+
 
     # Graphing Update
     if (np.mod(k, graphInterval) == 0) and dynamicGraphing:
