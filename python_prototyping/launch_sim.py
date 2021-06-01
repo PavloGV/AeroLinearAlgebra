@@ -191,10 +191,6 @@ Yi = Y0
 for k in steps:
 
     Jack.model.update(t[k], Yi)
-    # print('X.shape={}'.format(X.shape))
-    # print('X.shape={}'.format(X.shape))
-    # print('Yi.shape={}'.format(Yi.shape))
-    # rk_step(Jack.model.update, t[k], Yi)
 
     # scipy.integrate.RK45(Jack.model.update, t[k], Yi, t[k]+CN.dt)
 
@@ -223,20 +219,13 @@ for k in steps:
     # print('Fg={}'.format(Fg))
 
     if t[k] < 10:
-        # pmag = np.linalg.norm(p)
-        # Fi = 100*(p-r)/pmag
         Fi = point/np.linalg.norm(point)*initforce
 
     else:
         Fi = np.zeros((3,1))
     Fi = np.reshape(Fi, (len(Fi),))
-    # print('Fi.shape={}'.format(Fi.shape))
-    # print('Fg.shape={}'.format(Fg.shape))
 
     Fsum = Fi + Fg
-    # print('Fsum={}'.format(Fsum))
-    # while True:
-    #     Fsum += 0
 
     Yi = np.concatenate((X, Fsum))
 
@@ -280,6 +269,7 @@ for k in steps:
         ax0.draw_artist(radius)
         ax0.draw_artist(sphere)
         ax0.draw_artist(force)
+
         # fig.canvas.restore_region(background0)
 
         fig.canvas.blit(ax0.bbox)
