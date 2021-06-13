@@ -1,0 +1,7 @@
+# ignore generated pdf files
+*.pdf
+*.aux
+*.*
+!.py
+!.cpp
+!.h
