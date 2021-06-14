@@ -33,12 +33,24 @@ zmax =  radiusEarth*scale
 # Timing
 dt = 0.025	  	# sample time in seconds
 t0 = -10.0 		# Start time of simulation in seconds
-tf = 10000.0 		# Stop time of simulation in seconds
+tl = 0.0        # Launch time
+tf = 30000.0    # Stop time of simulation in seconds
 
 ###############################################################################
-# Projectile Constants
+# Projectile
 massProjectile = 1252.0 	# projectile mass in kg
 
+###############################################################################
+# Accelerator
+railLength = 10.0 # Meters
+
+###############################################################################
+# Capacitor
+maxVoltage = 50 # Capacitor voltage
+maxCapacitance = 20 # Capacitor capacity (capacitance) in Farads
+
+###############################################################################
+# Coordinate
 origin = np.zeros((3,1))
 # origin = np.array([[10000],
 #                    [10000],
@@ -58,8 +70,7 @@ x0 += origin[0][0]
 y0 += origin[1][0]
 z0 += origin[2][0]
 
-# State size
-#stateSize = 10#19
-
 ###############################################################################
 # Planet
+
+# Atmosphere

@@ -6,14 +6,15 @@
 .. moduleauthor:: Pavlo Vlastos <pvlastos@ucsc.edu>
 """
 
-
-# from .accelerator import Accelerator as AR
+##############################################################################
+import RailAcceleration.Accelerator as AR
 import RailAcceleration.Projectile.Projectile as PR
 import RailAcceleration.Constants.Constants as CN
 import RailAcceleration.Utilities.Rotations as ROT
+import RailAcceleration.Modeling.Forces as FO
 import numpy as np
 #import scipy
-from scipy import integrate
+# from scipy import integrate
 
 import matplotlib
 from matplotlib import cm
@@ -24,6 +25,7 @@ import matplotlib.animation as animation
 
 import argparse
 
+##############################################################################
 parser = argparse.ArgumentParser()
 
 parser.add_argument('-d', '--dynamicGraphing', dest='dynamicGraphing', 
@@ -42,7 +44,8 @@ parser.add_argument('-s', '--staticGraphing', dest='staticGraphing',
                         runs the main loop')
 
 parser.add_argument('-v', '--verbose', dest='verbose', 
-                    action='store_true', help='Display state at every iteration', default = False)
+                    action='store_true', help='Display state at every \
+                        iteration', default = False)
 
 arguments = parser.parse_args()
 
@@ -51,8 +54,6 @@ initforce = arguments.initforce
 graphInterval = arguments.interval
 staticGraphing = arguments.staticGraphing
 verbose = arguments.verbose
-
-
 
 ##############################################################################
 # print("Building accelerator (Amy)...")
@@ -110,8 +111,6 @@ v = np.array([[1],
               [0], 
               [0]])
 
-# v = point/np.linalg.norm(point)
-
 u = r/np.linalg.norm(r)
 
 print('u.shape={}'.format(u.shape))
@@ -148,6 +147,7 @@ sphy = np.sin(u)*np.sin(v)*CN.radiusEarth + CN.origin[1][0]
 sphz = np.cos(v)*CN.radiusEarth + CN.origin[2][0]
 
 sphere = ax0.plot_wireframe(sphx, sphy, sphz, color="blue")
+# sphere = ax0.plot(sphx*np.nan, sphy*np.nan, sphz*np.nan, marker='.', color="blue")[0]
 
 # Radius Vector
 rx = np.array([CN.origin[0][0], r[0][0]])
@@ -171,6 +171,13 @@ fig.canvas.draw()
 
 background0 = fig.canvas.copy_from_bbox(ax0.bbox)
 
+ax0.draw_artist(position)
+ax0.draw_artist(radius)
+ax0.draw_artist(force)
+ax0.draw_artist(sphere)
+
+fig.canvas.blit(ax0.bbox)
+
 ##############################################################################
 # Main Loop Setup
 
@@ -178,8 +185,6 @@ background0 = fig.canvas.copy_from_bbox(ax0.bbox)
 t = np.arange(CN.t0, CN.tf, CN.dt)
 maxStepNum = len(t)
 steps = range(0, maxStepNum)
-
-
 
 # RK = scipy.integrate.RK45(Jack.model.update, CN.t0, Y0, CN.tf)
 # print(RK)
@@ -194,62 +199,40 @@ u = np.zeros(3)
 for k in steps:
 
     X = Jack.update(t[k], X, u)
-    # print('X.shape={}'.format(X.shape))
-    # rk_step(Jack.model.update, t[k], Yi)
 
     # scipy.integrate.RK45(Jack.model.update, t[k], Yi, t[k]+CN.dt)
 
     r = Jack.state.getPosVector()
-    # print('r.shape={}'.format(r.shape))
-    # print('r={}'.format(r))
-    r -= CN.origin
-    
-    rmag = np.linalg.norm(r)
 
-    if rmag < 0:
-        print('negative position vector?!')
-        rmag = 1
-        
-    r2 = rmag**2.0
-    FgMag = -CN.G*CN.massEarth*Jack.state.mass/r2
+    Fg = FO.calculateGravity(r, CN.massEarth, 
+                             Jack.state.mass, CN.origin)
 
-    Fg = FgMag * r/rmag
-    Fg = np.reshape(Fg, (len(Fg),))
-    # print('Fg={}'.format(Fg))
-
-    if t[k] < 10:
-        # pmag = np.linalg.norm(p)
-        # Fi = 100*(p-r)/pmag
+    if t[k] < CN.tl:
         Fi = point/np.linalg.norm(point)*initforce
 
     else:
         Fi = np.zeros((3,1))
     Fi = np.reshape(Fi, (len(Fi),))
-    # print('Fi={}'.format(Fi))
 
     u = Fi + Fg
-    # print('Fsum={}'.format(Fsum))
-    # while True:
-    #     Fsum += 0
 
     # Graphing Update
     if (np.mod(k, graphInterval) == 0) and dynamicGraphing:
+                
+        # fig.canvas.restore_region(background0)
 
         x = np.concatenate((x, np.array([Jack.state.x])), axis=0) 
         y = np.concatenate((y, np.array([Jack.state.y])), axis=0)
         z = np.concatenate((z, np.array([Jack.state.z])), axis=0)
         if verbose:
-            print("k = {}, Fgmag = {}, Fimag = {}, x:{}, y:{}, z:{}, mass:{}".format(
-                k,  round(np.linalg.norm(Fg)), round(np.linalg.norm(Fi)), 
-                round(Jack.state.x), round(Jack.state.y), round(Jack.state.z),
-                Jack.state.mass))
+            print("k = {}, Fgmag = {}, Fimag = {}, x:{}, y:{}, z:{}, mass:{}"
+                .format(k,  round(np.linalg.norm(Fg)), 
+                round(np.linalg.norm(Fi)), round(Jack.state.x), 
+                round(Jack.state.y), round(Jack.state.z), Jack.state.mass))
         
         position.set_data(x, y)
         position.set_3d_properties(z)
-
-        ax0.draw_artist(position)
-        # fig.canvas.restore_region(background0)
-
+        
         r += CN.origin
         rx = np.array([CN.origin[0][0], r[0][0]])
         ry = np.array([CN.origin[1][0], r[1][0]])
@@ -266,15 +249,17 @@ for k in steps:
         forcex = np.array([Jack.state.x, a[0][0]])
         forcey = np.array([Jack.state.y, a[1][0]])
         forcez = np.array([Jack.state.z, a[2][0]])
+
         force.set_data(forcex, forcey)
         force.set_3d_properties(forcez)
 
+        ax0.draw_artist(position)
         ax0.draw_artist(radius)
-        ax0.draw_artist(sphere)
         ax0.draw_artist(force)
-        # fig.canvas.restore_region(background0)
+        ax0.draw_artist(sphere)
 
         fig.canvas.blit(ax0.bbox)
+
         fig.canvas.flush_events()
 
 # if staticGraphing:
